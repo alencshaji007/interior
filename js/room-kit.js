@@ -187,19 +187,21 @@
           gap = local < 0.012 || endDist < 0.0012 ? 1 : 0;
           dv = local;
         }
-        // Growth rings: stretched warped stripes running along u.
-        const warp = n.fbm(du, v, 2, planks ? rows * 2 : 4, 4);
-        const t = (dv * (planks ? 3 : 14) + warp * 2.4 + shift * 0.37);
-        const ring = Math.pow(Math.abs(Math.sin(t * Math.PI)), 3);
-        const fibre = n.fbm(du, v, 2, 512, 2);
-        const figure = n.fbm(du, v, 4, planks ? rows * 4 : 16, 4);
-        let k = 0.26 + ring * 0.14 + (fibre - 0.5) * 0.1 + (figure - 0.5) * 0.55;
+        // Growth rings: thin latewood lines, strongly warped so they curve
+        // into cathedral figure instead of reading as straight stripes.
+        const warp = n.fbm(du, v, 2, planks ? rows * 2 : 4, 5);
+        // Floors: flat-sawn cathedral figure. Joinery: calmer rift-cut grain.
+        const t = dv * (planks ? 2.2 : 18) + warp * (planks ? 4.2 : 1.3) + shift * 0.37;
+        const ring = Math.pow(Math.abs(Math.sin(t * Math.PI)), 7);
+        const fibre = n.fbm(du, v, 6, 192, 2);
+        const figure = n.fbm(du, v, 3, planks ? rows * 3 : 10, 4);
+        let k = 0.3 + ring * 0.24 + (fibre - 0.5) * 0.08 + (figure - 0.5) * 0.5;
         k = clamp01(k);
         out[0] = mix(light[0], dark[0], k) * tone;
         out[1] = mix(light[1], dark[1], k) * tone;
         out[2] = mix(light[2], dark[2], k) * tone;
         if (gap) { out[0] *= 0.45; out[1] *= 0.42; out[2] *= 0.4; }
-        out[3] = gap ? 0 : 0.6 + fibre * 0.4;
+        out[3] = gap ? 0 : 0.8 + (fibre - 0.5) * 0.1;
       }, true);
     },
 
@@ -210,10 +212,10 @@
         const turb = n.fbm(u, v, 3, 3, 6);
         const t1 = u * 2 + v * 1 + turb * 4.5;
         const t2 = u * 1 - v * 3 + n.fbm(u, v, 5, 5, 5) * 6;
-        const main = 1 - smooth(0.0, 0.07, Math.abs(Math.sin(t1 * Math.PI)));
-        const fine = 1 - smooth(0.0, 0.025, Math.abs(Math.sin(t2 * Math.PI)));
+        const main = 1 - smooth(0.0, 0.1, Math.abs(Math.sin(t1 * Math.PI)));
+        const fine = 1 - smooth(0.0, 0.02, Math.abs(Math.sin(t2 * Math.PI)));
         const cloud = n.fbm(u, v, 4, 4, 4);
-        const k = clamp01(main * 0.85 + fine * 0.35 + (cloud - 0.5) * 0.15);
+        const k = clamp01(main * 0.75 + fine * 0.16 + (cloud - 0.5) * 0.15);
         const b = dark ? [46, 43, 41] : base;
         const c = dark ? [190, 182, 170] : vein;
         out[0] = mix(b[0], c[0], k);
@@ -458,8 +460,8 @@
   // tools/render exports these to assets/textures/<key>.webp (and
   // <key>-normal.webp) so the live site can load them instead of computing.
   const TEXTURES = {
-    wood: { gen: (s) => TextureFactory.wood(s, { seed: 4 }), normal: 0.8 },
-    planks: { gen: (s) => TextureFactory.wood(s, { seed: 8, planks: true, rows: 8 }), normal: 1.6 },
+    wood: { gen: (s) => TextureFactory.wood(s, { seed: 4 }), normal: 0.35 },
+    planks: { gen: (s) => TextureFactory.wood(s, { seed: 8, planks: true, rows: 8 }), normal: 0.9 },
     marble: { gen: (s) => TextureFactory.marble(s, { seed: 7 }), normal: null },
     marbleDark: { gen: (s) => TextureFactory.marble(s, { seed: 31, dark: true }), normal: null },
     travertine: { gen: (s) => TextureFactory.travertine(s, { seed: 5 }), normal: 1.4 },
@@ -585,9 +587,9 @@
     M.floor.userData.texMeters = texMeters;
     M.wall.userData.texMeters = 3;
     M.ceiling.userData.texMeters = 4;
-    M.oak.userData.texMeters = 1.6;
+    M.oak.userData = { texMeters: 1.6, grainVertical: true };
     M.oakSlat.userData = { texMeters: 1.2, grainVertical: true };
-    M.walnut.userData.texMeters = 1.6;
+    M.walnut.userData = { texMeters: 1.6, grainVertical: true };
     M.marble.userData.texMeters = 1.8;
     M.marbleDark.userData.texMeters = 1.8;
     M.travertine.userData.texMeters = 1.4;
@@ -1509,7 +1511,9 @@
       [-0.95, -0.2, 0.55].forEach((x) => root.add(at(Objects.stool(M), x - 0.5, 0, 0.55)));
       [-1.4, -0.5, 0.4].forEach((x) => root.add(at(Objects.pendant(M, { drop: 1.3, kind: 'globe', r: 0.14 }), x, H, -0.35)));
       root.add(at(Objects.plant(M, { height: 2.0, spread: 0.75, seed: 22, leaves: 1100 }), 3.3, 0, 2.2));
-      root.add(at(Objects.diningTable(M, { w: 1.6, d: 0.85 }), 2.3, 0, -0.2, Math.PI / 2));
+      root.add(at(Objects.roundTable(M, { r: 0.55 }), 2.4, 0, -0.5));
+      [[2.4, -1.25, 0], [3.15, -0.5, -Math.PI / 2]].forEach(([x, z, ry]) => root.add(at(Objects.diningChair(M), x, 0, z, ry)));
+      root.add(at(Objects.vase(M, { h: 0.3, r: 0.09, variant: 1, mat: M.ceramic }), 2.35, 0.77, -0.5));
 
       return {
         root,
@@ -1573,7 +1577,7 @@
       root.add(at(Objects.frameChair(M, { cushion: M.linen }), -1.2, 0, 1.4, 0.7));
       root.add(at(Objects.arcLamp(M, { reach: 1.1, h: 1.9 }), -2.2, 0, 2.1, -0.9));
       root.add(at(Objects.plant(M, { height: 1.8, spread: 0.7, seed: 42, leaves: 1000 }), 2.8, 0, -2.1));
-      root.add(at(Objects.artwork(M, { w: 1.0, h: 1.3, seed: 8, frame: 'black' }), -0.6, 1.6, -D / 2 + 0.01));
+      root.add(at(Objects.artwork(M, { w: 0.9, h: 1.2, seed: 8, frame: 'black' }), -2.1, 1.6, -D / 2 + 0.01));
 
       return {
         root,
