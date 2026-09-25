@@ -472,6 +472,20 @@
      Boot
      ------------------------------------------------------------------------ */
 
+  // A missing or failed image shows its quiet frame colour instead of the
+  // browser's broken-image icon and alt text.
+  function initImageFallbacks() {
+    const mark = (img) => img.classList.add('is-missing');
+    document.addEventListener('error', (e) => {
+      if (e.target instanceof HTMLImageElement) mark(e.target);
+    }, true);
+    document.addEventListener('load', (e) => {
+      if (e.target instanceof HTMLImageElement) e.target.classList.remove('is-missing');
+    }, true);
+    // Images that already failed before this script ran.
+    $$('img').forEach((img) => { if (img.complete && img.currentSrc && img.naturalWidth === 0) mark(img); });
+  }
+
   function initSmallThings() {
     $$('[data-year]').forEach((el) => (el.textContent = new Date().getFullYear()));
   }
@@ -487,6 +501,7 @@
     initCarousel();
     initForm();
     initSmallThings();
+    initImageFallbacks();
     FORMA.roomViewer = FORMA.RoomViewer ? FORMA.RoomViewer.init($('[data-room-viewer]'), env) : null;
 
     const anim = FORMA.Animations ? FORMA.Animations.init(env) : null;
