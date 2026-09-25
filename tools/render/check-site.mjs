@@ -25,14 +25,14 @@ for (const w of widths.length ? widths : [1440]) {
     scrollW: document.documentElement.scrollWidth, innerW: innerWidth,
   }));
   console.log(`\n== ${w}px`, JSON.stringify(state));
-  await page.screenshot({ path: `${outDir}/w${w}${reduced ? '-reduced' : ''}-top.png` });
+  await page.screenshot({ path: `${outDir}/w${w}${reduced ? '-reduced' : ''}-top.png`, timeout: 120000 });
   if (scroll) {
     const total = await page.evaluate(() => document.documentElement.scrollHeight);
     let i = 0;
     for (let y = 0; y < total; y += h * 0.9) {
       await page.evaluate((yy) => window.scrollTo(0, yy), y);
       await page.waitForTimeout(1600);
-      await page.screenshot({ path: `${outDir}/w${w}${reduced ? '-reduced' : ''}-s${String(i++).padStart(2, '0')}.png` });
+      await page.screenshot({ path: `${outDir}/w${w}${reduced ? '-reduced' : ''}-s${String(i++).padStart(2, '0')}.png`, timeout: 120000 });
     }
   }
   const uniq = [...new Set(errors)];

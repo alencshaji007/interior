@@ -194,6 +194,12 @@ ul {
   outline-offset: 4px;
 }
 
+/* The hidden attribute always wins over component display rules.
+   Testimonials are the exception: they stay in the grid to cross-fade. */
+[hidden]:not(.testimonial) {
+  display: none !important;
+}
+
 .sr-only {
   position: absolute !important;
   width: 1px;
@@ -902,6 +908,7 @@ body.menu-open .site-header {
 }
 
 .hero__eyebrow {
+  display: block;
   margin-bottom: 1.5rem;
 }
 
@@ -1184,6 +1191,23 @@ body.menu-open .site-header {
     transform: translateY(-0.2rem) rotate(-6deg);
     color: var(--wood);
   }
+}
+
+/* No scroll choreography (reduced motion / no GSAP): swipe natively. */
+.motion-off .services__viewport,
+html:not(.js) .services__viewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.motion-off .service-card,
+html:not(.js) .service-card {
+  scroll-snap-align: start;
+}
+
+.motion-off .services__progress,
+html:not(.js) .services__progress {
+  display: none;
 }
 
 .services__progress {
@@ -1600,6 +1624,11 @@ body.menu-open .site-header {
   top: calc(var(--header-h) + 3rem);
   display: grid;
   gap: 1.5rem;
+}
+
+.process__intro .display,
+.contact__info .display {
+  font-size: clamp(2.4rem, 1.3rem + 3.4vw, 5rem);
 }
 
 .process__intro p:last-child {

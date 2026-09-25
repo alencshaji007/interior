@@ -43,6 +43,8 @@
   // gets the path-traced poster of the same room.
   env.hero3D = env.webgl && !env.reducedMotion && !env.saveData && !env.lowMemory &&
     window.innerWidth >= 768 && !(env.touch && window.innerWidth < 1024);
+  // ?no3d forces the still-image experience (handy for testing and slow GPUs).
+  if (new URLSearchParams(location.search).has('no3d')) env.hero3D = false;
 
   root.classList.add('js');
   if (env.reducedMotion) root.classList.add('reduced-motion');
@@ -319,6 +321,7 @@
     let index = 0;
     let timer = 0;
     let paused = false;
+    let inView = false;
 
     const show = (next) => {
       next = (next + slides.length) % slides.length;
@@ -340,7 +343,7 @@
     const schedule = () => {
       window.clearInterval(timer);
       if (env.reducedMotion) return;
-      timer = window.setInterval(() => { if (!paused && !document.hidden) show(index + 1); }, 7000);
+      timer = window.setInterval(() => { if (inView && !paused && !document.hidden) show(index + 1); }, 7000);
     };
 
     $('[data-carousel-prev]', rootEl).addEventListener('click', () => { show(index - 1); schedule(); });
@@ -356,7 +359,11 @@
     });
     // Autoplay announces nothing; manual navigation is announced.
     track.setAttribute('aria-live', 'off');
-    schedule();
+    // Only advance while the testimonials are actually on screen.
+    new IntersectionObserver((entries) => {
+      inView = entries[0].isIntersecting;
+      if (inView) schedule();
+    }, { threshold: 0.4 }).observe(rootEl);
   }
 
   /* ------------------------------------------------------------------------

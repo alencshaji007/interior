@@ -75,6 +75,9 @@
       this.splits = $$('[data-split]').map((el) => ({ el, words: splitWords(el) }));
 
       if (!this.enabled) {
+        // Without scroll choreography, pinned sections fall back to native
+        // scrolling (see .motion-off in style.css).
+        document.documentElement.classList.add('motion-off');
         this.ready = true;
         return this;
       }

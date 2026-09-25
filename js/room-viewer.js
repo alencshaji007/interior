@@ -264,7 +264,7 @@
         this.io = new IntersectionObserver((entries) => {
           this.visible = entries[0].isIntersecting;
           if (this.visible) {
-            this.ensureLoaded(this.current).then(() => this.loop());
+            this.ensureLoaded(this.current).then(() => this.loop()).catch(() => {});
             // Warm the cache with the other rooms once the viewer is near.
             ORDER.forEach((r) => this.ensureLoaded(r).catch(() => {}));
           }
