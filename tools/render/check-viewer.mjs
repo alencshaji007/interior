@@ -1,0 +1,22 @@
+// Checks the WebGL depth-parallax room viewer and 3D hero with final assets.
+import { chromium } from '/opt/node22/lib/node_modules/playwright/index.mjs';
+const [url, out] = process.argv.slice(2);
+const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
+const errors = [];
+p.on('pageerror', (e) => errors.push(e.message));
+p.on('response', (r) => { if (r.status() >= 400) errors.push(r.status() + ' ' + r.url()); });
+p.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+await p.goto(url);
+await p.waitForFunction(() => document.querySelector('[data-hero]').classList.contains('is-3d'), null, { timeout: 180000 });
+await p.evaluate(() => document.querySelector('#spaces').scrollIntoView());
+await p.waitForFunction(() => document.querySelector('[data-viewer-frame]').classList.contains('is-webgl'), null, { timeout: 120000 });
+await p.mouse.move(500, 600, { steps: 4 });
+await p.waitForTimeout(2000);
+await p.locator('[data-viewer-frame]').screenshot({ path: out + '/viewer-living.png', timeout: 120000 });
+await p.click('#tab-kitchen');
+await p.waitForTimeout(4000);
+await p.locator('[data-viewer-frame]').screenshot({ path: out + '/viewer-kitchen.png', timeout: 120000 });
+console.log({ webgl: true, panel: await p.textContent('[data-room-name]') });
+console.log(errors.length ? errors.join('\n') : 'no errors');
+await b.close();
