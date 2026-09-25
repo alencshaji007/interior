@@ -114,7 +114,7 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.quality === 'high' ? 1.5 : 1.25));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.AgXToneMapping;
-      renderer.toneMappingExposure = 1.45;
+      renderer.toneMappingExposure = 1.3;
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -130,15 +130,15 @@
       this.envMap = pmrem.fromEquirectangular(sky).texture;
       pmrem.dispose();
       scene.environment = this.envMap;
-      scene.environmentIntensity = 0.62;
+      scene.environmentIntensity = 0.5;
       scene.background = sky;
       scene.backgroundIntensity = 1.25;
       scene.fog = new THREE.Fog(0xe8e3da, 22, 70);
 
-      scene.add(new THREE.HemisphereLight(0xfff4e6, 0xb49c80, 0.55));
+      scene.add(new THREE.HemisphereLight(0xfff4e6, 0xb49c80, 0.4));
 
       // Low garden sun raking through the glazing — the key light.
-      const sun = (this.sun = new THREE.DirectionalLight(L.sunColor, 3.4));
+      const sun = (this.sun = new THREE.DirectionalLight(L.sunColor, 4));
       sun.position.copy(new THREE.Vector3(...L.sun).normalize().multiplyScalar(18));
       sun.target.position.set(-1, 0, 0);
       sun.castShadow = true;
@@ -256,7 +256,7 @@
       this.updateCamera(t);
 
       // Light responds very slightly to the pointer.
-      this.sun.intensity = 3.4 * (1 + this.smooth.x * 0.05);
+      this.sun.intensity = 4 * (1 + this.smooth.x * 0.05);
       this.lamp.intensity = 2.4 * (1 - this.smooth.y * 0.08) + Math.sin(t * 0.8) * 0.05;
 
       // Subtle life: foliage and sheers breathe, the pendant drifts.
