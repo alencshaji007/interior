@@ -1,0 +1,3 @@
+node_modules/
+tools/render/out/
+.DS_Store
