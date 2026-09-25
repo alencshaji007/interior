@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>FORMA — Luxury Interior Design</title>
+  <meta name="description" content="FORMA creates refined residential interiors, luxury villas and bespoke spaces designed around the way you live.">
+  <meta name="theme-color" content="#f5f1ea">
+  <meta name="color-scheme" content="light">
+  <link rel="canonical" href="https://www.forma-interiors.com/">
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FORMA">
+  <meta property="og:title" content="FORMA — Luxury Interior Design">
+  <meta property="og:description" content="FORMA creates refined residential interiors, luxury villas and bespoke spaces designed around the way you live.">
+  <meta property="og:url" content="https://www.forma-interiors.com/">
+  <meta property="og:image" content="https://www.forma-interiors.com/assets/images/og-image-1200.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A sunlit FORMA living room with oak slat walls, a bouclé sofa and floor-to-ceiling garden glazing.">
+  <meta property="og:locale" content="en_IN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FORMA — Luxury Interior Design">
+  <meta name="twitter:description" content="Refined residential interiors, luxury villas and bespoke spaces designed around the way you live.">
+  <meta name="twitter:image" content="https://www.forma-interiors.com/assets/images/og-image-1200.jpg">
+
+  <link rel="icon" href="assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/cormorant-garamond-latin-300-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="assets/images/hero-living-1920.webp" type="image/webp" imagesrcset="assets/images/hero-living-960.webp 960w, assets/images/hero-living-1920.webp 1920w" imagesizes="100vw">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "InteriorDesigner",
+    "name": "FORMA",
+    "slogan": "Spaces Designed Around You.",
+    "description": "FORMA creates refined residential interiors, luxury villas and bespoke spaces designed around the way you live.",
+    "url": "https://www.forma-interiors.com/",
+    "email": "hello@forma-interiors.com",
+    "telephone": "+91 98765 43210",
+    "areaServed": ["Kochi", "Bengaluru", "Dubai"],
+    "image": "https://www.forma-interiors.com/assets/images/og-image-1200.jpg"
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Page loader: brief (~1s) wordmark reveal, removed by js/animations.js -->
+  <div class="loader" data-loader aria-hidden="true">
+    <div class="loader__inner">
+      <span class="loader__word">
+        <span>F</span><span>O</span><span>R</span><span>M</span><span>A</span>
+      </span>
+      <span class="loader__line"><span></span></span>
+      <span class="loader__caption">Interior Architecture</span>
+    </div>
+  </div>
+
+  <!-- Custom cursor (desktop pointer devices only) -->
+  <div class="cursor" data-cursor-root aria-hidden="true">
+    <span class="cursor__dot"></span>
+    <span class="cursor__ring"><span class="cursor__label"></span></span>
+  </div>
+
+  <header class="site-header" data-header>
+    <div class="site-header__inner">
+      <a class="brand" href="#top" aria-label="FORMA — back to top">FORMA</a>
+      <nav class="nav" aria-label="Primary">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="#work">Work</a></li>
+          <li><a class="nav__link" href="#services">Services</a></li>
+          <li><a class="nav__link" href="#process">Process</a></li>
+          <li><a class="nav__link" href="#about">About</a></li>
+          <li><a class="nav__link" href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <a class="btn btn--outline btn--sm nav-cta magnetic" href="#contact"><span>Start a Project</span></a>
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
+        <span class="sr-only">Open menu</span>
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile navigation overlay -->
+  <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
+    <nav aria-label="Mobile">
+      <ol class="mobile-menu__list">
+        <li><a href="#work"><span>01</span>Work</a></li>
+        <li><a href="#services"><span>02</span>Services</a></li>
+        <li><a href="#process"><span>03</span>Process</a></li>
+        <li><a href="#about"><span>04</span>About</a></li>
+        <li><a href="#contact"><span>05</span>Contact</a></li>
+      </ol>
+    </nav>
+    <div class="mobile-menu__foot">
+      <a class="btn btn--dark" href="#contact"><span>Start a Project</span></a>
+      <p><a href="mailto:hello@forma-interiors.com">hello@forma-interiors.com</a><br><a href="tel:+919876543210">+91 98765 43210</a></p>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- ================================================================
+         HERO — live Three.js living room (js/three-scene.js) over a
+         path-traced poster of the same room (shown until 3D is ready,
+         and permanently on mobile / reduced motion / no WebGL).
+         ================================================================ -->
+    <section class="hero" id="top" data-hero aria-labelledby="hero-title">
+      <div class="hero__media" data-hero-media>
+        <!-- Image: replace assets/images/hero-living-*.{webp,jpg} with hero photography (16:9) -->
+        <picture class="hero__poster">
+          <source type="image/webp" srcset="assets/images/hero-living-960.webp 960w, assets/images/hero-living-1920.webp 1920w" sizes="100vw">
+          <img src="assets/images/hero-living-1920.jpg" srcset="assets/images/hero-living-960.jpg 960w, assets/images/hero-living-1920.jpg 1920w" sizes="100vw" width="1920" height="1080" alt="Sunlit living room with oak slat walls, a bouclé sofa, travertine tables and floor-to-ceiling garden glazing." fetchpriority="high" decoding="async">
+        </picture>
+        <canvas class="hero__canvas" data-hero-canvas aria-hidden="true"></canvas>
+        <div class="hero__shade" aria-hidden="true"></div>
+      </div>
+
+      <div class="hero__content container">
+        <p class="eyebrow eyebrow--light hero__eyebrow" data-hero-item>Interior Architecture Studio <span aria-hidden="true">—</span> Est. 2010</p>
+        <h1 class="hero__title" id="hero-title">
+          <span class="hero__brand" data-hero-brand>FORMA</span>
+          <span class="hero__tagline" data-hero-item>Spaces Designed Around You.</span>
+        </h1>
+        <p class="hero__lead" data-hero-item>Luxury interiors crafted with architecture, material and emotion.</p>
+        <div class="hero__actions" data-hero-item>
+          <a class="btn btn--light magnetic" href="#work"><span>Explore Our Work</span></a>
+          <a class="btn btn--ghost-light magnetic" href="#contact"><span>Start a Project</span></a>
+        </div>
+      </div>
+
+      <div class="hero__meta container" data-hero-item>
+        <p class="hero__caption"><span>Fig. 01</span> The Oak Residence — Kochi</p>
+        <p class="hero__scroll" aria-hidden="true"><span class="hero__scroll-line"></span>Scroll to enter</p>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         INTRO
+         ================================================================ -->
+    <section class="intro section" id="studio" aria-labelledby="intro-title">
+      <div class="container intro__grid">
+        <div class="intro__text">
+          <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(01)</span> The Studio</p>
+          <h2 class="display intro__title" id="intro-title" data-split>Interiors with intention.</h2>
+          <p class="intro__lead" data-reveal="up">We design homes that balance architecture, functionality and atmosphere — creating spaces that feel timeless, personal and distinctly yours.</p>
+          <div class="intro__notes" data-reveal="up">
+            <p>Every FORMA interior begins with the architecture: proportion, light and the way you move through a room. Materials come next — chosen for how they age, not only how they photograph.</p>
+            <a class="link-arrow" href="#process">Our approach <span aria-hidden="true">→</span></a>
+          </div>
+        </div>
+
+        <figure class="intro__figure" data-cursor="explore">
+          <div class="media media--tall" data-reveal="clip">
+            <!-- Image: replace assets/images/intro-stair-*.{webp,jpg} (4:5 portrait) -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/intro-stair-600.webp 600w, assets/images/intro-stair-1000.webp 1000w" sizes="(min-width: 992px) 40vw, 90vw">
+              <img src="assets/images/intro-stair-1000.jpg" srcset="assets/images/intro-stair-600.jpg 600w, assets/images/intro-stair-1000.jpg 1000w" sizes="(min-width: 992px) 40vw, 90vw" width="1000" height="1250" loading="lazy" decoding="async" alt="Double-height villa hall with a floating oak stair against a travertine wall and full-height glazing." data-parallax>
+            </picture>
+          </div>
+          <figcaption class="caption">The Glass Villa — floating oak stair, Dubai</figcaption>
+          <canvas class="ornament intro__ornament" data-ornament="wire" aria-hidden="true"></canvas>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         SERVICES — horizontal scroll on desktop, stacked on mobile
+         ================================================================ -->
+    <section class="services section" id="services" aria-labelledby="services-title" data-services>
+      <div class="container services__head">
+        <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(02)</span> Services</p>
+        <h2 class="display services__title" id="services-title" data-split>What We Create</h2>
+        <p class="services__intro" data-reveal="up">Six ways we work — from a single room to a complete home, designed, built and styled by one studio.</p>
+      </div>
+
+      <div class="services__pin" data-services-pin>
+      <div class="services__viewport" data-services-viewport>
+        <ol class="services__track" data-services-track>
+          <li class="service-card" data-cursor="explore">
+            <div class="service-card__media">
+              <!-- Image: replace assets/images/service-residential-* -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/service-residential-600.webp 600w, assets/images/service-residential-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 85vw">
+                <img src="assets/images/service-residential-600.jpg" width="600" height="750" loading="lazy" decoding="async" alt="Bouclé sofa and travertine drum tables in front of an oak slat wall.">
+              </picture>
+            </div>
+            <div class="service-card__body">
+              <span class="service-card__num" aria-hidden="true">01</span>
+              <h3 class="service-card__title">Residential Interiors</h3>
+              <p class="service-card__desc">Complete interiors for private homes — planned around daily rituals, natural light and the way your family gathers.</p>
+              <p class="service-card__tags">Space planning · Joinery · Styling</p>
+            </div>
+          </li>
+          <li class="service-card" data-cursor="explore">
+            <div class="service-card__media">
+              <!-- Image: replace assets/images/service-villa-* -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/service-villa-600.webp 600w, assets/images/service-villa-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 85vw">
+                <img src="assets/images/service-villa-600.jpg" width="600" height="750" loading="lazy" decoding="async" alt="Double-height villa living hall with a stone fireplace and glazing onto a pool terrace.">
+              </picture>
+            </div>
+            <div class="service-card__body">
+              <span class="service-card__num" aria-hidden="true">02</span>
+              <h3 class="service-card__title">Luxury Villas</h3>
+              <p class="service-card__desc">Architecture-led villa interiors with generous volumes, natural stone and seamless indoor–outdoor living.</p>
+              <p class="service-card__tags">Interior architecture · Landscape thresholds</p>
+            </div>
+          </li>
+          <li class="service-card" data-cursor="explore">
+            <div class="service-card__media">
+              <!-- Image: replace assets/images/service-apartment-* -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/service-apartment-600.webp 600w, assets/images/service-apartment-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 85vw">
+                <img src="assets/images/service-apartment-600.jpg" width="600" height="750" loading="lazy" decoding="async" alt="Calm apartment bedroom with a timber headboard wall, linen bedding and sheer curtains.">
+              </picture>
+            </div>
+            <div class="service-card__body">
+              <span class="service-card__num" aria-hidden="true">03</span>
+              <h3 class="service-card__title">Modern Apartments</h3>
+              <p class="service-card__desc">Quiet, space-efficient apartments where every millimetre of joinery earns its place.</p>
+              <p class="service-card__tags">Renovation · Storage design · Lighting</p>
+            </div>
+          </li>
+          <li class="service-card" data-cursor="explore">
+            <div class="service-card__media">
+              <!-- Image: replace assets/images/service-furniture-* -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/service-furniture-600.webp 600w, assets/images/service-furniture-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 85vw">
+                <img src="assets/images/service-furniture-600.jpg" width="600" height="750" loading="lazy" decoding="async" alt="Walnut-framed leather lounge chair beside a sculptural bouclé armchair.">
+              </picture>
+            </div>
+            <div class="service-card__body">
+              <span class="service-card__num" aria-hidden="true">04</span>
+              <h3 class="service-card__title">Custom Furniture</h3>
+              <p class="service-card__desc">Bespoke pieces drawn in our studio and made by master craftspeople in oak, walnut, stone and bronze.</p>
+              <p class="service-card__tags">Design · Prototyping · Making</p>
+            </div>
+          </li>
+          <li class="service-card" data-cursor="explore">
+            <div class="service-card__media">
+              <!-- Image: replace assets/images/service-lighting-* -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/service-lighting-600.webp 600w, assets/images/service-lighting-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 85vw">
+                <img src="assets/images/service-lighting-600.jpg" width="600" height="750" loading="lazy" decoding="async" alt="Linear bronze pendant glowing above an oak dining table at dusk.">
+              </picture>
+            </div>
+            <div class="service-card__body">
+              <span class="service-card__num" aria-hidden="true">05</span>
+              <h3 class="service-card__title">Lighting &amp; Materials</h3>
+              <p class="service-card__desc">Layered lighting schemes and considered material palettes that change beautifully from morning to night.</p>
+              <p class="service-card__tags">Lighting design · Material libraries</p>
+            </div>
+          </li>
+          <li class="service-card" data-cursor="explore">
+            <div class="service-card__media">
+              <!-- Image: replace assets/images/service-turnkey-* -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/service-turnkey-600.webp 600w, assets/images/service-turnkey-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 85vw">
+                <img src="assets/images/service-turnkey-600.jpg" width="600" height="750" loading="lazy" decoding="async" alt="Oak kitchen with full-height joinery and a waterfall marble island.">
+              </picture>
+            </div>
+            <div class="service-card__body">
+              <span class="service-card__num" aria-hidden="true">06</span>
+              <h3 class="service-card__title">Complete Turnkey Design</h3>
+              <p class="service-card__desc">From first sketch to final cushion — one team managing design, procurement, site and installation.</p>
+              <p class="service-card__tags">Project management · Procurement · Handover</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div class="container services__progress" aria-hidden="true"><span data-services-progress></span></div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ROOM SHOWCASE — depth-parallax viewer (js/room-viewer.js)
+         ================================================================ -->
+    <section class="spaces section section--dark" id="spaces" aria-labelledby="spaces-title">
+      <div class="container spaces__head">
+        <p class="eyebrow eyebrow--light" data-reveal="up"><span class="eyebrow__index">(03)</span> Interactive</p>
+        <h2 class="display display--light" id="spaces-title" data-split>Explore Our Spaces</h2>
+      </div>
+
+      <div class="container spaces__layout" data-room-viewer>
+        <div class="spaces__tabs" role="tablist" aria-label="Rooms">
+          <button class="spaces__tab" role="tab" id="tab-living" aria-selected="true" aria-controls="room-panel" data-room="living">Living</button>
+          <button class="spaces__tab" role="tab" id="tab-bedroom" aria-selected="false" aria-controls="room-panel" tabindex="-1" data-room="bedroom">Bedroom</button>
+          <button class="spaces__tab" role="tab" id="tab-kitchen" aria-selected="false" aria-controls="room-panel" tabindex="-1" data-room="kitchen">Kitchen</button>
+          <button class="spaces__tab" role="tab" id="tab-dining" aria-selected="false" aria-controls="room-panel" tabindex="-1" data-room="dining">Dining</button>
+          <button class="spaces__tab" role="tab" id="tab-office" aria-selected="false" aria-controls="room-panel" tabindex="-1" data-room="office">Office</button>
+        </div>
+
+        <div class="spaces__stage" data-cursor="explore">
+          <div class="spaces__frame" data-viewer-frame>
+            <!-- Images + depth maps: assets/images/room-<name>-{800,1600}.{webp,jpg} and room-<name>-depth.png -->
+            <div class="spaces__fallback" data-viewer-fallback>
+              <img class="is-active" data-fallback-room="living" src="assets/images/room-living-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Living room: bouclé sofa, oak slat wall and garden glazing.">
+              <img data-fallback-room="bedroom" src="assets/images/room-bedroom-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Bedroom: oak headboard wall, linen bed and sheer curtains.">
+              <img data-fallback-room="kitchen" src="assets/images/room-kitchen-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Kitchen: oak joinery, marble splashback and a waterfall island.">
+              <img data-fallback-room="dining" src="assets/images/room-dining-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Dining room: oak table, linen chairs and a linear bronze pendant.">
+              <img data-fallback-room="office" src="assets/images/room-office-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Study: walnut bookcase wall, desk facing the garden and reading chair.">
+            </div>
+            <canvas class="spaces__canvas" data-viewer-canvas aria-hidden="true"></canvas>
+            <p class="spaces__hint" aria-hidden="true">Move to look around</p>
+          </div>
+        </div>
+
+        <div class="spaces__panel" id="room-panel" role="tabpanel" aria-labelledby="tab-living" aria-live="polite" data-viewer-panel>
+          <p class="spaces__count"><span data-room-index>01</span> / 05</p>
+          <h3 class="spaces__name" data-room-name>Living</h3>
+          <p class="spaces__project" data-room-project>The Oak Residence</p>
+          <p class="spaces__desc" data-room-desc>A low, generous living room turned towards the garden. Vertical oak slats warm the long wall while floor-to-ceiling glazing draws the landscape inside.</p>
+          <dl class="spaces__specs">
+            <div><dt>Area</dt><dd data-room-area>64 m²</dd></div>
+            <div><dt>Palette</dt><dd data-room-palette>White oak, bouclé, travertine</dd></div>
+            <div><dt>Light</dt><dd data-room-light>West-facing garden glazing</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         PROJECTS — editorial grid, each opens a detail dialog
+         ================================================================ -->
+    <section class="projects section" id="work" aria-labelledby="work-title">
+      <div class="container projects__head">
+        <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(04)</span> Portfolio</p>
+        <h2 class="display" id="work-title" data-split>Selected Spaces</h2>
+        <p class="projects__intro" data-reveal="up">A selection of recent homes across India and the Gulf — each one shaped by its site, its light and the people who live there.</p>
+      </div>
+
+      <div class="container projects__grid">
+        <article class="project project--wide">
+          <a class="project__link" href="#project-oak" data-project="oak" data-cursor="view" aria-haspopup="dialog">
+            <div class="media" data-reveal="clip">
+              <!-- Image: replace assets/images/project-oak-* (16:10) -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/project-oak-800.webp 800w, assets/images/project-oak-1600.webp 1600w" sizes="(min-width: 992px) 62vw, 92vw">
+                <img src="assets/images/project-oak-1600.jpg" srcset="assets/images/project-oak-800.jpg 800w, assets/images/project-oak-1600.jpg 1600w" sizes="(min-width: 992px) 62vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="The Oak Residence living room with oak slat panelling and garden views." data-parallax>
+              </picture>
+            </div>
+            <div class="project__meta">
+              <span class="project__num">01</span>
+              <h3 class="project__name">The Oak Residence</h3>
+              <p class="project__details"><span>Kochi, India</span><span>2024</span><span>Private Residence</span></p>
+            </div>
+          </a>
+        </article>
+
+        <article class="project project--tall project--offset">
+          <a class="project__link" href="#project-terra" data-project="terra" data-cursor="view" aria-haspopup="dialog">
+            <div class="media" data-reveal="clip">
+              <!-- Image: replace assets/images/project-terra-* (4:5) -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/project-terra-600.webp 600w, assets/images/project-terra-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 92vw">
+                <img src="assets/images/project-terra-1000.jpg" srcset="assets/images/project-terra-600.jpg 600w, assets/images/project-terra-1000.jpg 1000w" sizes="(min-width: 992px) 30vw, 92vw" width="1000" height="1250" loading="lazy" decoding="async" alt="Casa Terra dining room in warm terracotta and clay tones." data-parallax>
+              </picture>
+            </div>
+            <div class="project__meta">
+              <span class="project__num">02</span>
+              <h3 class="project__name">Casa Terra</h3>
+              <p class="project__details"><span>Goa, India</span><span>2023</span><span>Villa</span></p>
+            </div>
+          </a>
+        </article>
+
+        <article class="project project--wide project--right">
+          <a class="project__link" href="#project-glass" data-project="glass" data-cursor="view" aria-haspopup="dialog">
+            <div class="media" data-reveal="clip">
+              <!-- Image: replace assets/images/project-glass-* (16:10) -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/project-glass-800.webp 800w, assets/images/project-glass-1600.webp 1600w" sizes="(min-width: 992px) 62vw, 92vw">
+                <img src="assets/images/project-glass-1600.jpg" srcset="assets/images/project-glass-800.jpg 800w, assets/images/project-glass-1600.jpg 1600w" sizes="(min-width: 992px) 62vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="The Glass Villa double-height hall with a wall of glass onto the pool terrace." data-parallax>
+              </picture>
+            </div>
+            <div class="project__meta">
+              <span class="project__num">03</span>
+              <h3 class="project__name">The Glass Villa</h3>
+              <p class="project__details"><span>Dubai, UAE</span><span>2024</span><span>Luxury Villa</span></p>
+            </div>
+          </a>
+        </article>
+
+        <article class="project project--tall">
+          <a class="project__link" href="#project-atelier" data-project="atelier" data-cursor="view" aria-haspopup="dialog">
+            <div class="media" data-reveal="clip">
+              <!-- Image: replace assets/images/project-atelier-* (4:5) -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/project-atelier-600.webp 600w, assets/images/project-atelier-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 92vw">
+                <img src="assets/images/project-atelier-1000.jpg" srcset="assets/images/project-atelier-600.jpg 600w, assets/images/project-atelier-1000.jpg 1000w" sizes="(min-width: 992px) 30vw, 92vw" width="1000" height="1250" loading="lazy" decoding="async" alt="Urban Atelier study with a walnut desk, concrete walls and steel windows." data-parallax>
+              </picture>
+            </div>
+            <div class="project__meta">
+              <span class="project__num">04</span>
+              <h3 class="project__name">Urban Atelier</h3>
+              <p class="project__details"><span>Bengaluru, India</span><span>2022</span><span>Apartment &amp; Studio</span></p>
+            </div>
+          </a>
+        </article>
+
+        <article class="project project--wide project--push">
+          <a class="project__link" href="#project-coastal" data-project="coastal" data-cursor="view" aria-haspopup="dialog">
+            <div class="media" data-reveal="clip">
+              <!-- Image: replace assets/images/project-coastal-* (16:10) -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/project-coastal-800.webp 800w, assets/images/project-coastal-1600.webp 1600w" sizes="(min-width: 992px) 62vw, 92vw">
+                <img src="assets/images/project-coastal-1600.jpg" srcset="assets/images/project-coastal-800.jpg 800w, assets/images/project-coastal-1600.jpg 1600w" sizes="(min-width: 992px) 62vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="Coastal Residence bedroom in pale oak and linen with a view to the sea." data-parallax>
+              </picture>
+            </div>
+            <div class="project__meta">
+              <span class="project__num">05</span>
+              <h3 class="project__name">Coastal Residence</h3>
+              <p class="project__details"><span>Alibaug, India</span><span>2023</span><span>Holiday Home</span></p>
+            </div>
+          </a>
+        </article>
+
+        <article class="project project--tall project--offset">
+          <a class="project__link" href="#project-stone" data-project="stone" data-cursor="view" aria-haspopup="dialog">
+            <div class="media" data-reveal="clip">
+              <!-- Image: replace assets/images/project-stone-* (4:5) -->
+              <picture>
+                <source type="image/webp" srcset="assets/images/project-stone-600.webp 600w, assets/images/project-stone-1000.webp 1000w" sizes="(min-width: 992px) 30vw, 92vw">
+                <img src="assets/images/project-stone-1000.jpg" srcset="assets/images/project-stone-600.jpg 600w, assets/images/project-stone-1000.jpg 1000w" sizes="(min-width: 992px) 30vw, 92vw" width="1000" height="1250" loading="lazy" decoding="async" alt="The Stone House kitchen with a dark marble island and pendant lights." data-parallax>
+              </picture>
+            </div>
+            <div class="project__meta">
+              <span class="project__num">06</span>
+              <h3 class="project__name">The Stone House</h3>
+              <p class="project__details"><span>Coorg, India</span><span>2021</span><span>Hillside House</span></p>
+            </div>
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         MATERIAL PALETTE
+         ================================================================ -->
+    <section class="materials section" id="materials" aria-labelledby="materials-title">
+      <div class="container materials__head">
+        <div>
+          <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(05)</span> Materials</p>
+          <h2 class="display" id="materials-title" data-split>The Material Palette</h2>
+        </div>
+        <p class="materials__intro" data-reveal="up">Six families of honest, natural materials — sourced for their character, detailed to age gracefully and chosen to be touched every day.</p>
+        <canvas class="ornament materials__ornament" data-ornament="spheres" aria-hidden="true"></canvas>
+      </div>
+
+      <ul class="container materials__grid" role="list">
+        <li class="material" data-material data-cursor="explore">
+          <div class="material__media">
+            <!-- Image: replace assets/images/material-wood-* (square) -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/material-wood-600.webp 600w, assets/images/material-wood-1100.webp 1100w" sizes="(min-width: 992px) 30vw, (min-width: 480px) 45vw, 90vw">
+              <img src="assets/images/material-wood-600.jpg" width="600" height="600" loading="lazy" decoding="async" alt="Oiled white oak slab and turned oak sphere on a stone plinth.">
+            </picture>
+            <span class="material__light" aria-hidden="true"></span>
+          </div>
+          <div class="material__text">
+            <h3 class="material__name">Wood</h3>
+            <p>European white oak and American walnut, oiled by hand.</p>
+          </div>
+        </li>
+        <li class="material" data-material data-cursor="explore">
+          <div class="material__media">
+            <!-- Image: replace assets/images/material-stone-* -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/material-stone-600.webp 600w, assets/images/material-stone-1100.webp 1100w" sizes="(min-width: 992px) 30vw, (min-width: 480px) 45vw, 90vw">
+              <img src="assets/images/material-stone-600.jpg" width="600" height="600" loading="lazy" decoding="async" alt="Honed travertine slabs and sphere with natural pores.">
+            </picture>
+            <span class="material__light" aria-hidden="true"></span>
+          </div>
+          <div class="material__text">
+            <h3 class="material__name">Stone</h3>
+            <p>Honed travertine and limestone with their natural pores left open.</p>
+          </div>
+        </li>
+        <li class="material" data-material data-cursor="explore">
+          <div class="material__media">
+            <!-- Image: replace assets/images/material-marble-* -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/material-marble-600.webp 600w, assets/images/material-marble-1100.webp 1100w" sizes="(min-width: 992px) 30vw, (min-width: 480px) 45vw, 90vw">
+              <img src="assets/images/material-marble-600.jpg" width="600" height="600" loading="lazy" decoding="async" alt="Calacatta marble slab and polished marble sphere.">
+            </picture>
+            <span class="material__light" aria-hidden="true"></span>
+          </div>
+          <div class="material__text">
+            <h3 class="material__name">Marble</h3>
+            <p>Calacatta and Nero Marquina, book-matched and lightly polished.</p>
+          </div>
+        </li>
+        <li class="material" data-material data-cursor="explore">
+          <div class="material__media">
+            <!-- Image: replace assets/images/material-metal-* -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/material-metal-600.webp 600w, assets/images/material-metal-1100.webp 1100w" sizes="(min-width: 992px) 30vw, (min-width: 480px) 45vw, 90vw">
+              <img src="assets/images/material-metal-600.jpg" width="600" height="600" loading="lazy" decoding="async" alt="Brushed bronze panel, brass sphere and blackened steel cylinder.">
+            </picture>
+            <span class="material__light" aria-hidden="true"></span>
+          </div>
+          <div class="material__text">
+            <h3 class="material__name">Metal</h3>
+            <p>Brushed bronze, satin brass and blackened steel details.</p>
+          </div>
+        </li>
+        <li class="material" data-material data-cursor="explore">
+          <div class="material__media">
+            <!-- Image: replace assets/images/material-glass-* -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/material-glass-600.webp 600w, assets/images/material-glass-1100.webp 1100w" sizes="(min-width: 992px) 30vw, (min-width: 480px) 45vw, 90vw">
+              <img src="assets/images/material-glass-600.jpg" width="600" height="600" loading="lazy" decoding="async" alt="Clear glass panel and sphere beside a smoked glass vase.">
+            </picture>
+            <span class="material__light" aria-hidden="true"></span>
+          </div>
+          <div class="material__text">
+            <h3 class="material__name">Glass</h3>
+            <p>Low-iron, fluted and smoked glass to shape light and privacy.</p>
+          </div>
+        </li>
+        <li class="material" data-material data-cursor="explore">
+          <div class="material__media">
+            <!-- Image: replace assets/images/material-fabric-* -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/material-fabric-600.webp 600w, assets/images/material-fabric-1100.webp 1100w" sizes="(min-width: 992px) 30vw, (min-width: 480px) 45vw, 90vw">
+              <img src="assets/images/material-fabric-600.jpg" width="600" height="600" loading="lazy" decoding="async" alt="Stacked bouclé, linen and leather cushions.">
+            </picture>
+            <span class="material__light" aria-hidden="true"></span>
+          </div>
+          <div class="material__text">
+            <h3 class="material__name">Fabric</h3>
+            <p>Bouclé, washed linen and vegetable-tanned leather.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ================================================================
+         PROCESS TIMELINE
+         ================================================================ -->
+    <section class="process section" id="process" aria-labelledby="process-title">
+      <div class="container process__grid">
+        <div class="process__intro">
+          <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(06)</span> Design Process</p>
+          <h2 class="display" id="process-title" data-split>From first conversation to final reveal.</h2>
+          <p data-reveal="up">A clear, five-stage process with one dedicated team — so decisions are made calmly, and nothing is left to chance on site.</p>
+        </div>
+
+        <ol class="timeline" data-timeline>
+          <li class="timeline__line" aria-hidden="true"><span data-timeline-fill></span></li>
+          <li class="timeline__step" data-step>
+            <span class="timeline__num">01</span>
+            <div>
+              <h3 class="timeline__title">Discover</h3>
+              <p>Understanding the client's lifestyle, needs and vision.</p>
+              <p class="timeline__time">2 weeks</p>
+            </div>
+          </li>
+          <li class="timeline__step" data-step>
+            <span class="timeline__num">02</span>
+            <div>
+              <h3 class="timeline__title">Concept</h3>
+              <p>Developing the architectural and visual direction.</p>
+              <p class="timeline__time">3–4 weeks</p>
+            </div>
+          </li>
+          <li class="timeline__step" data-step>
+            <span class="timeline__num">03</span>
+            <div>
+              <h3 class="timeline__title">Design</h3>
+              <p>Refining layouts, materials, furniture and lighting.</p>
+              <p class="timeline__time">6–8 weeks</p>
+            </div>
+          </li>
+          <li class="timeline__step" data-step>
+            <span class="timeline__num">04</span>
+            <div>
+              <h3 class="timeline__title">Build</h3>
+              <p>Turning the approved design into reality.</p>
+              <p class="timeline__time">4–9 months</p>
+            </div>
+          </li>
+          <li class="timeline__step" data-step>
+            <span class="timeline__num">05</span>
+            <div>
+              <h3 class="timeline__title">Reveal</h3>
+              <p>Delivering a finished space designed to last.</p>
+              <p class="timeline__time">Handover day</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         ABOUT
+         ================================================================ -->
+    <section class="about section section--sand" id="about" aria-labelledby="about-title">
+      <div class="container about__grid">
+        <figure class="about__figure" data-cursor="explore">
+          <div class="media media--tall" data-reveal="clip">
+            <!-- Image: replace assets/images/about-studio-* (4:5) -->
+            <picture>
+              <source type="image/webp" srcset="assets/images/about-studio-600.webp 600w, assets/images/about-studio-1000.webp 1000w" sizes="(min-width: 992px) 38vw, 90vw">
+              <img src="assets/images/about-studio-1000.jpg" srcset="assets/images/about-studio-600.jpg 600w, assets/images/about-studio-1000.jpg 1000w" sizes="(min-width: 992px) 38vw, 90vw" width="1000" height="1250" loading="lazy" decoding="async" alt="The FORMA studio library: a walnut bookcase wall with books, ceramics and material samples." data-parallax>
+            </picture>
+          </div>
+          <figcaption class="caption">The studio library, Kochi</figcaption>
+        </figure>
+
+        <div class="about__text">
+          <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(07)</span> About FORMA</p>
+          <h2 class="display" id="about-title" data-split>We design how home feels.</h2>
+          <p class="about__lead" data-reveal="up">FORMA began in 2010 as a two-person studio in Kochi with a simple belief: a home should be shaped around the people inside it, not around trends.</p>
+          <p data-reveal="up">Today we are a team of architects, interior designers and makers working across India and the Gulf. We still sketch every project by hand, still visit every stone yard, and still sit with our clients long before a single line is drawn.</p>
+
+          <ul class="principles" role="list">
+            <li data-reveal="up"><h3>Architecture first</h3><p>Proportion, light and circulation come before furniture.</p></li>
+            <li data-reveal="up"><h3>Honest materials</h3><p>Natural materials, detailed to age with grace.</p></li>
+            <li data-reveal="up"><h3>Made to be lived in</h3><p>Beauty that survives children, guests and time.</p></li>
+          </ul>
+
+          <dl class="stats" data-stats>
+            <div class="stat"><dt>Years Experience</dt><dd><span data-count="15">15</span>+</dd></div>
+            <div class="stat"><dt>Projects</dt><dd><span data-count="120">120</span>+</dd></div>
+            <div class="stat"><dt>Design Awards</dt><dd><span data-count="48">48</span></dd></div>
+            <div class="stat"><dt>Cities</dt><dd><span data-count="12">12</span></dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         TESTIMONIALS
+         ================================================================ -->
+    <section class="testimonials section" aria-labelledby="testimonials-title">
+      <div class="container testimonials__inner" data-carousel aria-roledescription="carousel">
+        <h2 class="eyebrow testimonials__label" id="testimonials-title"><span class="eyebrow__index">(08)</span> Client Words</h2>
+
+        <div class="testimonials__slides" data-carousel-track aria-live="polite">
+          <figure class="testimonial is-active" role="group" aria-roledescription="slide" aria-label="1 of 3" data-slide>
+            <blockquote>
+              <p>“The team transformed our house into a space that feels completely ours. Every material, detail and proportion was considered.”</p>
+            </blockquote>
+            <figcaption><strong>Maya &amp; Arjun</strong><span>Private Residence, Kochi</span></figcaption>
+          </figure>
+          <figure class="testimonial" role="group" aria-roledescription="slide" aria-label="2 of 3" data-slide hidden>
+            <blockquote>
+              <p>“They listened more than they talked. Two years on, the way evening light moves across the stone still stops us in our tracks.”</p>
+            </blockquote>
+            <figcaption><strong>Farah &amp; Omar</strong><span>The Glass Villa, Dubai</span></figcaption>
+          </figure>
+          <figure class="testimonial" role="group" aria-roledescription="slide" aria-label="3 of 3" data-slide hidden>
+            <blockquote>
+              <p>“FORMA handled everything, from the first sketch to the last cushion. The process was calm and precise — and the house feels effortless.”</p>
+            </blockquote>
+            <figcaption><strong>Leena &amp; Karthik</strong><span>Coastal Residence, Alibaug</span></figcaption>
+          </figure>
+        </div>
+
+        <div class="testimonials__controls">
+          <button class="icon-btn magnetic" type="button" data-carousel-prev aria-label="Previous testimonial">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" /></svg>
+          </button>
+          <div class="testimonials__dots" data-carousel-dots>
+            <button type="button" aria-label="Show testimonial 1" aria-current="true"></button>
+            <button type="button" aria-label="Show testimonial 2"></button>
+            <button type="button" aria-label="Show testimonial 3"></button>
+          </div>
+          <button class="icon-btn magnetic" type="button" data-carousel-next aria-label="Next testimonial">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" /></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         CALL TO ACTION
+         ================================================================ -->
+    <section class="cta" aria-labelledby="cta-title">
+      <div class="cta__media" aria-hidden="true">
+        <!-- Image: replace assets/images/cta-dusk-* (16:9, dusk interior) -->
+        <picture>
+          <source type="image/webp" srcset="assets/images/cta-dusk-800.webp 800w, assets/images/cta-dusk-1600.webp 1600w" sizes="100vw">
+          <img src="assets/images/cta-dusk-1600.jpg" srcset="assets/images/cta-dusk-800.jpg 800w, assets/images/cta-dusk-1600.jpg 1600w" sizes="100vw" width="1600" height="900" loading="lazy" decoding="async" alt="" data-cta-image>
+        </picture>
+        <canvas class="ornament cta__ornament" data-ornament="blocks"></canvas>
+      </div>
+      <div class="container cta__content">
+        <p class="eyebrow eyebrow--light" data-reveal="up">Begin</p>
+        <h2 class="cta__title" id="cta-title" data-split>Let's create your space.</h2>
+        <p class="cta__text" data-reveal="up">Tell us about your home, your lifestyle and the way you want it to feel.</p>
+        <a class="btn btn--light btn--lg magnetic" href="#contact" data-reveal="up"><span>Start a Conversation</span></a>
+      </div>
+    </section>
+
+    <!-- ================================================================
+         CONTACT
+         ================================================================ -->
+    <section class="contact section" id="contact" aria-labelledby="contact-title">
+      <div class="container contact__grid">
+        <div class="contact__info">
+          <p class="eyebrow" data-reveal="up"><span class="eyebrow__index">(09)</span> Contact</p>
+          <h2 class="display" id="contact-title" data-split>Tell us about your project.</h2>
+          <p data-reveal="up">Share a few details and a member of our design team will reply within two working days to arrange a first conversation.</p>
+          <address class="contact__details" data-reveal="up">
+            <div><span>Email</span><a href="mailto:hello@forma-interiors.com">hello@forma-interiors.com</a></div>
+            <div><span>Phone</span><a href="tel:+919876543210">+91 98765 43210</a></div>
+            <div><span>Studios</span><p>Kochi · Bengaluru · Dubai</p></div>
+          </address>
+        </div>
+
+        <div class="contact__form-wrap">
+          <form class="form" data-form novalidate aria-describedby="form-note">
+            <div class="form__row">
+              <div class="field">
+                <label for="f-name">Name</label>
+                <input id="f-name" name="name" type="text" autocomplete="name" required minlength="2" aria-describedby="f-name-error">
+                <p class="field__error" id="f-name-error" aria-live="polite"></p>
+              </div>
+              <div class="field">
+                <label for="f-email">Email</label>
+                <input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="f-email-error">
+                <p class="field__error" id="f-email-error" aria-live="polite"></p>
+              </div>
+            </div>
+            <div class="form__row">
+              <div class="field">
+                <label for="f-phone">Phone</label>
+                <input id="f-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required aria-describedby="f-phone-error">
+                <p class="field__error" id="f-phone-error" aria-live="polite"></p>
+              </div>
+              <div class="field field--select">
+                <label for="f-type">Project Type</label>
+                <select id="f-type" name="projectType" required aria-describedby="f-type-error">
+                  <option value="" selected disabled>Select a type</option>
+                  <option>Apartment</option>
+                  <option>Villa</option>
+                  <option>House</option>
+                  <option>Office</option>
+                  <option>Commercial</option>
+                  <option>Other</option>
+                </select>
+                <p class="field__error" id="f-type-error" aria-live="polite"></p>
+              </div>
+            </div>
+            <fieldset class="field field--chips" aria-describedby="f-budget-error">
+              <legend>Budget Range</legend>
+              <div class="chips">
+                <label class="chip"><input type="radio" name="budget" value="₹10L – ₹25L" required><span>₹10L – ₹25L</span></label>
+                <label class="chip"><input type="radio" name="budget" value="₹25L – ₹50L"><span>₹25L – ₹50L</span></label>
+                <label class="chip"><input type="radio" name="budget" value="₹50L – ₹1Cr"><span>₹50L – ₹1Cr</span></label>
+                <label class="chip"><input type="radio" name="budget" value="₹1Cr+"><span>₹1Cr+</span></label>
+              </div>
+              <p class="field__error" id="f-budget-error" aria-live="polite"></p>
+            </fieldset>
+            <div class="field">
+              <label for="f-message">Message</label>
+              <textarea id="f-message" name="message" rows="4" required minlength="10" placeholder="Tell us about the space, your timeline and how you'd like it to feel." aria-describedby="f-message-error"></textarea>
+              <p class="field__error" id="f-message-error" aria-live="polite"></p>
+            </div>
+            <div class="form__foot">
+              <p class="form__note" id="form-note">All fields are required. We never share your details.</p>
+              <button class="btn btn--dark btn--lg magnetic" type="submit" data-submit><span>Send Enquiry</span></button>
+            </div>
+          </form>
+
+          <div class="form-success" data-form-success hidden tabindex="-1" role="status">
+            <svg class="form-success__mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="30" /><path d="M20 33l8 8 16-17" /></svg>
+            <h3>Thank you<span data-success-name></span>.</h3>
+            <p>Your enquiry has reached our studio. A member of the FORMA design team will be in touch within two working days.</p>
+            <button class="link-arrow" type="button" data-form-reset>Send another enquiry <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__top">
+      <div class="footer__brand">
+        <a class="footer__logo" href="#top">FORMA</a>
+        <p>Spaces Designed Around You.</p>
+      </div>
+      <nav class="footer__col" aria-label="Footer">
+        <h2 class="footer__heading">Navigate</h2>
+        <ul>
+          <li><a href="#work">Work</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#process">Process</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="footer__col">
+        <h2 class="footer__heading">Social</h2>
+        <ul>
+          <li><a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+          <li><a href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer">Pinterest</a></li>
+          <li><a href="https://www.behance.net/" target="_blank" rel="noopener noreferrer">Behance</a></li>
+          <li><a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h2 class="footer__heading">Contact</h2>
+        <ul>
+          <li><a href="mailto:hello@forma-interiors.com">hello@forma-interiors.com</a></li>
+          <li><a href="tel:+919876543210">+91 98765 43210</a></li>
+          <li>Kochi · Bengaluru · Dubai</li>
+        </ul>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© <span data-year>2026</span> FORMA Interior Architecture. All rights reserved.</p>
+      <a class="footer__top-link" href="#top">Back to top <span aria-hidden="true">↑</span></a>
+    </div>
+    <p class="footer__word" aria-hidden="true">FORMA</p>
+  </footer>
+
+  <!-- Project detail dialog (content injected from the templates below) -->
+  <dialog class="project-dialog" data-project-dialog aria-labelledby="dialog-title">
+    <div class="project-dialog__inner" data-dialog-content></div>
+    <button class="icon-btn project-dialog__close" type="button" data-dialog-close aria-label="Close project">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
+    </button>
+  </dialog>
+
+  <template id="project-oak">
+    <p class="eyebrow">01 — Private Residence</p>
+    <h2 id="dialog-title">The Oak Residence</h2>
+    <dl class="project-dialog__facts"><div><dt>Location</dt><dd>Kochi, India</dd></div><div><dt>Year</dt><dd>2024</dd></div><div><dt>Area</dt><dd>420 m²</dd></div><div><dt>Scope</dt><dd>Interior architecture, joinery, furniture</dd></div></dl>
+    <p>A family home organised around a sheltered garden. We replaced a warren of rooms with one long living space, wrapped its longest wall in vertical white-oak slats and opened the garden side with frameless full-height glazing.</p>
+    <p>Furniture was kept low to hold the view: a bespoke bouclé sofa, travertine drum tables quarried in Tivoli and a walnut lounge chair made in our Kochi workshop.</p>
+  </template>
+  <template id="project-terra">
+    <p class="eyebrow">02 — Villa</p>
+    <h2 id="dialog-title">Casa Terra</h2>
+    <dl class="project-dialog__facts"><div><dt>Location</dt><dd>Goa, India</dd></div><div><dt>Year</dt><dd>2023</dd></div><div><dt>Area</dt><dd>560 m²</dd></div><div><dt>Scope</dt><dd>Complete turnkey design</dd></div></dl>
+    <p>A holiday villa that borrows its palette from the red earth around it: handmade terracotta floors, lime-plastered walls and linen in tones of clay and sand.</p>
+    <p>The dining room opens fully to a shaded veranda, turning long lunches into the heart of the house.</p>
+  </template>
+  <template id="project-glass">
+    <p class="eyebrow">03 — Luxury Villa</p>
+    <h2 id="dialog-title">The Glass Villa</h2>
+    <dl class="project-dialog__facts"><div><dt>Location</dt><dd>Dubai, UAE</dd></div><div><dt>Year</dt><dd>2024</dd></div><div><dt>Area</dt><dd>1,150 m²</dd></div><div><dt>Scope</dt><dd>Interior architecture, lighting, furniture</dd></div></dl>
+    <p>A six-metre living hall faced entirely in glass towards the pool terrace. A travertine wall anchors the room and carries a floating oak stair, while a monolithic stone plinth houses a linear fireplace.</p>
+    <p>Deep reveals and automated sheers temper the desert light across the day.</p>
+  </template>
+  <template id="project-atelier">
+    <p class="eyebrow">04 — Apartment &amp; Studio</p>
+    <h2 id="dialog-title">Urban Atelier</h2>
+    <dl class="project-dialog__facts"><div><dt>Location</dt><dd>Bengaluru, India</dd></div><div><dt>Year</dt><dd>2022</dd></div><div><dt>Area</dt><dd>210 m²</dd></div><div><dt>Scope</dt><dd>Renovation, joinery, lighting</dd></div></dl>
+    <p>A top-floor apartment for an architect and a writer, part home and part workplace. Raw concrete was left exposed and paired with a full-height walnut library and blackened-steel windows.</p>
+    <p>The desk faces the city's rain trees; everything else is storage, hidden in plain sight.</p>
+  </template>
+  <template id="project-coastal">
+    <p class="eyebrow">05 — Holiday Home</p>
+    <h2 id="dialog-title">Coastal Residence</h2>
+    <dl class="project-dialog__facts"><div><dt>Location</dt><dd>Alibaug, India</dd></div><div><dt>Year</dt><dd>2023</dd></div><div><dt>Area</dt><dd>380 m²</dd></div><div><dt>Scope</dt><dd>Complete turnkey design</dd></div></dl>
+    <p>A weekend house facing the Arabian Sea, designed to be opened on Friday and closed on Sunday with no effort at all. Pale oak, washed linen and sheers soften the strong coastal light.</p>
+    <p>Every bedroom looks to the horizon; every surface forgives sand and salt.</p>
+  </template>
+  <template id="project-stone">
+    <p class="eyebrow">06 — Hillside House</p>
+    <h2 id="dialog-title">The Stone House</h2>
+    <dl class="project-dialog__facts"><div><dt>Location</dt><dd>Coorg, India</dd></div><div><dt>Year</dt><dd>2021</dd></div><div><dt>Area</dt><dd>490 m²</dd></div><div><dt>Scope</dt><dd>Interior architecture, kitchen, furniture</dd></div></dl>
+    <p>A house of local stone set into a coffee-estate hillside. Inside, the kitchen is built like a piece of furniture: oak joinery, a Nero Marquina island and hand-blown glass pendants.</p>
+    <p>Thick walls keep the rooms cool in summer and hold the warmth of the hearth through the monsoon.</p>
+  </template>
+
+  <!-- Libraries (local copies — see README for versions) -->
+  <script src="assets/vendor/gsap.min.js" defer></script>
+  <script src="assets/vendor/ScrollTrigger.min.js" defer></script>
+  <!-- Site scripts. Three.js + the 3D modules are loaded on demand by main.js
+       only on devices that can afford them. -->
+  <script src="js/animations.js" defer></script>
+  <script src="js/room-viewer.js" defer></script>
+  <script src="js/main.js" defer></script>
+</body>
+</html>

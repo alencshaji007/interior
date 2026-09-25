@@ -1,19 +1,22 @@
 {
-  "name": "render",
+  "name": "forma-render-tools",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Offline tooling for the FORMA site: vendor bundles, procedural textures and Cycles renders.",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:vendor": "esbuild src/three-vendor.js --bundle --minify --format=iife --legal-comments=none --outfile=../../assets/vendor/three.bundle.min.js && cp node_modules/gsap/dist/gsap.min.js node_modules/gsap/dist/ScrollTrigger.min.js ../../assets/vendor/",
+    "build:exporter": "esbuild src/export-entry.js --bundle --format=iife --outfile=export-bundle.js",
+    "textures": "npm run build:exporter && node export-textures.mjs",
+    "render": "npm run build:exporter && node pipeline.mjs",
+    "check": "node check-site.mjs http://127.0.0.1:8080/index.html out 1440 1024 768 390"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "esbuild": "^0.28.2",
     "gsap": "^3.15.0",
-    "three": "^0.186.1",
-    "three-gpu-pathtracer": "^0.0.24",
-    "three-mesh-bvh": "^0.9.15"
-  }
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@fontsource-variable/manrope": "^5.3.0",
+    "@fontsource/cormorant-garamond": "^5.3.0"
+  },
+  "private": true
 }

@@ -1,3 +1,5 @@
 node_modules/
 tools/render/out/
 .DS_Store
+tools/render/render-bundle.js
+tools/render/*-bundle.js
