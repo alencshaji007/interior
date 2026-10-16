@@ -66,11 +66,11 @@ JOBS = [
      'Hasselblad X2D, 45mm, f/4, shallow depth of field, tactile fabric and stone textures.'),
     ('project-smartleave', 'portrait',
      'Editorial interior photograph of a modern office reception: a reception counter clad in dark veined stone, in front of a backlit '
-     'oak-panelled feature wall with a round brushed-brass sculptural disc without any lettering, warm cove lighting in the ceiling, '
+     'oak-panelled feature wall with a single round brushed-brass sculptural disc as its only ornament, warm cove lighting in the ceiling, '
      f'oak plank floor, a tall plant in the corner, calm daylight. Empty and polished. {CAMERA}.'),
     ('project-smartleave-detail', 'square',
      'Interior photograph of a glass-walled meeting room in a modern Dubai office: black steel-framed glass partitions, a long white '
-     'meeting table with black task chairs, a wall-mounted screen, floor-to-ceiling windows with city towers and soft daylight, '
+     'meeting table with black task chairs, a switched-off black wall-mounted screen, floor-to-ceiling windows with city towers and soft daylight, '
      'oak floor reflecting the light. Empty room. Sony A7R IV, 35mm, f/5.6, true-to-life reflections.'),
     ('project-hoc', 'portrait',
      'Editorial interior photograph of a creative photo studio: a burnt-orange paper backdrop sweeping down onto a polished concrete '
@@ -82,7 +82,7 @@ JOBS = [
      'concrete floor, soft daylight. Sony A7R IV, 35mm, f/4, natural textures.'),
     ('project-strada', 'portrait',
      'Editorial interior photograph of an executive meeting room: a long matte black table with black wooden chairs, a vertical oak '
-     'slat feature wall, a slim linear black pendant light above the table, a wall-mounted screen, herringbone oak parquet floor, '
+     'slat feature wall, a slim linear black pendant light above the table, a switched-off black wall-mounted screen, herringbone oak parquet floor, '
      f'soft daylight from tall windows. Empty room, warm and refined. {CAMERA}.'),
     ('project-strada-detail', 'square',
      'Close-up interior photograph of black wooden chairs around a matte black table on a herringbone oak parquet floor, a vertical '
@@ -119,10 +119,10 @@ JOBS = [
      f'side, linear cove lighting, oak plank floor, soft daylight. Empty. {CAMERA}.'),
     ('process-hero', 'portrait',
      'Editorial interior photograph of a meeting room: a long matte black table with a few closed notebooks, black chairs on both '
-     'sides, a large dark wall-mounted screen on a warm plaster wall at the far end, a slim linear pendant light above, soft daylight '
+     'sides, a large switched-off black wall-mounted screen on a warm plaster wall at the far end, a slim linear pendant light above, soft daylight '
      f'from the side, refined and calm. Empty room. {CAMERA}.'),
     ('svc-design', 'portrait',
-     'Top-down photograph of an interior designer\'s desk: printed office floor plans and furniture layouts, material samples of oak, '
+     'Top-down photograph of an interior designer\'s desk: printed office floor plans drawn in fine black lines, material samples of oak, '
      'travertine and terracotta fabric swatches, a scale ruler, pencils and a laptop edge, soft window daylight with gentle shadows, '
      'natural paper texture. Flat lay, Sony A7R IV, 35mm, f/8, editorial still-life photography.'),
     ('svc-commercial', 'portrait',
