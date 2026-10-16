@@ -359,6 +359,99 @@
       });
     },
 
+    // Oak herringbone: k:1 boards in the classic zig-zag. The boards sit on a
+    // lattice spanned by (1,1) and (k,-k) board widths, which also contains
+    // (2k,0) and (0,2k), so a 2k × 2k tile wraps seamlessly.
+    herringbone(size, { seed = 12, k = 5, light = [214, 182, 142], dark = [156, 118, 80] } = {}) {
+      const n = createNoise(seed);
+      const r = rng(seed + 5);
+      const period = 2 * k;
+      const boards = new Map();
+      const board = (A, B, t) => {
+        // Canonical id modulo the tile: (A,B) ~ (A+k, B±1).
+        const Bm = ((B % 2) + 2) % 2;
+        const key = (((A + k * Bm) % period) + period) % period + ',' + t;
+        if (!boards.has(key)) boards.set(key, { tone: 0.84 + r() * 0.28, off: r() * 7, warm: r() });
+        return boards.get(key);
+      };
+      return paint(size, (u, v, out) => {
+        const x = u * period, y = v * period;
+        const a0 = Math.floor((x + y) / 2), b0 = Math.floor((x - y) / (2 * k));
+        let hit = null;
+        for (let da = -4; da <= 1 && !hit; da++) {
+          for (let db = -1; db <= 2 && !hit; db++) {
+            const A = a0 + da, B = b0 + db;
+            const lx = x - (A + k * B), ly = y - (A - k * B);
+            if (lx >= 0 && lx < k && ly >= 0 && ly < 1) hit = { A, B, t: 0, along: lx / k, across: ly };
+            else if (lx >= k && lx < k + 1 && ly >= 1 - k && ly < 1) hit = { A, B, t: 1, along: (ly + k - 1) / k, across: lx - k };
+          }
+        }
+        if (!hit) { out[0] = dark[0]; out[1] = dark[1]; out[2] = dark[2]; out[3] = 0; return; }
+        const b = board(hit.A, hit.B, hit.t);
+        const warp = n.fbm(hit.along, hit.across * 0.25 + b.off * 0.1, 3, 2, 4);
+        const ring = Math.pow(Math.abs(Math.sin((hit.across * 3.2 + warp * 2.6 + b.off) * Math.PI)), 6);
+        const fibre = n.fbm(hit.along, hit.across, 64, 4, 2);
+        const kk = clamp01(0.32 + ring * 0.22 + (fibre - 0.5) * 0.1 + (warp - 0.5) * 0.4);
+        const joint = hit.across < 0.035 || hit.along * k < 0.02;
+        out[0] = mix(light[0], dark[0], kk) * b.tone * (1 + (b.warm - 0.5) * 0.04);
+        out[1] = mix(light[1], dark[1], kk) * b.tone;
+        out[2] = mix(light[2], dark[2], kk) * b.tone * (1 - (b.warm - 0.5) * 0.05);
+        if (joint) { out[0] *= 0.55; out[1] *= 0.52; out[2] *= 0.5; }
+        out[3] = joint ? 0 : 0.8 + (fibre - 0.5) * 0.12;
+      }, true);
+    },
+
+    // Loop-pile carpet tiles laid quarter-turn, so neighbouring tiles catch
+    // the light differently.
+    carpet(size, { seed = 15, tiles = 4, base = [150, 150, 146] } = {}) {
+      const n = createNoise(seed);
+      const r = rng(seed);
+      const tone = [];
+      for (let i = 0; i < tiles * tiles; i++) tone.push(0.94 + r() * 0.1);
+      return paint(size, (u, v, out) => {
+        const ti = Math.floor(u * tiles), tj = Math.floor(v * tiles);
+        const streak = (ti + tj) % 2 ? n.fbm(u, v, 8, 192, 2) : n.fbm(u, v, 192, 8, 2);
+        const loops = n.fbm(u, v, 256, 256, 2);
+        const hgt = streak * 0.55 + loops * 0.45;
+        const k = (hgt - 0.5) * 0.4;
+        const t = tone[tj * tiles + ti];
+        const fu = u * tiles - ti, fv = v * tiles - tj;
+        const seam = fu < 0.004 || fv < 0.004 ? 0.86 : 1;
+        out[0] = base[0] * (1 + k) * t * seam;
+        out[1] = base[1] * (1 + k) * t * seam;
+        out[2] = base[2] * (1 + k) * t * seam;
+        out[3] = hgt * seam;
+      }, true);
+    },
+
+    // Tower facades for the city seen from office windows: a glass curtain
+    // wall, or (punched) stone with recessed windows. A few panes are lit.
+    facade(size, { seed = 27, punched = false, cols = 8, rows = 8 } = {}) {
+      const r = rng(seed);
+      const tone = [];
+      for (let i = 0; i < cols * rows; i++) tone.push(r());
+      return paint(size, (u, v, out) => {
+        const cu = u * cols, cv = v * rows;
+        const ci = Math.floor(cu), cj = Math.floor(cv);
+        const fu = cu - ci, fv = cv - cj;
+        const t = tone[cj * cols + ci];
+        const lit = t > 0.94;
+        const glass = lit ? [214, 196, 160] : [112 + t * 40, 132 + t * 34, 150 + t * 30];
+        const sheen = 0.82 + (1 - fv) * 0.3;
+        let c;
+        if (punched) {
+          const win = fu > 0.2 && fu < 0.8 && fv > 0.18 && fv < 0.8;
+          const reveal = !win && fu > 0.17 && fu < 0.83 && fv > 0.15 && fv < 0.83;
+          c = win ? glass.map((x) => x * sheen * 0.9) : reveal ? [168, 156, 140] : [214, 204, 188];
+        } else {
+          const mullion = fu < 0.035 || fu > 0.965;
+          const spandrel = fv > 0.78;
+          c = mullion ? [196, 200, 204] : spandrel ? [86, 94, 104] : glass.map((x) => x * sheen);
+        }
+        out[0] = c[0]; out[1] = c[1]; out[2] = c[2]; out[3] = 0;
+      });
+    },
+
     // Abstract gallery painting: earthy blocks, arcs and gestural marks.
     art(width, height, { seed = 1, palette = null } = {}) {
       const r = rng(seed);
@@ -475,6 +568,16 @@
     brushed: { gen: (s) => TextureFactory.brushed(s, { seed: 23 }), normal: null },
   };
 
+  // Offline-only textures for the commercial scenes rendered in tools/render.
+  // Kept out of TEXTURES (and so out of TEXTURE_FILES) so the live site never
+  // requests or generates them.
+  const EXTRA_TEXTURES = {
+    herringbone: { gen: (s) => TextureFactory.herringbone(s, { seed: 12 }), normal: 0.9 },
+    carpet: { gen: (s) => TextureFactory.carpet(s, { seed: 15 }), normal: 1.6 },
+    facade: { gen: (s) => TextureFactory.facade(s, { seed: 27 }), normal: null },
+    facadePunched: { gen: (s) => TextureFactory.facade(s, { seed: 29, punched: true }), normal: null },
+  };
+
   // Render every texture (and normal map) to canvases — used by the export
   // tooling to produce assets/textures.
   function generateTextureSet(size = 1024) {
@@ -501,7 +604,8 @@
     const images = options.images || {};
     const anisotropy = options.anisotropy || 8;
 
-    const generated = (key) => (cache[key] = cache[key] || TEXTURES[key].gen(size));
+    const spec = (key) => TEXTURES[key] || EXTRA_TEXTURES[key];
+    const generated = (key) => (cache[key] = cache[key] || spec(key).gen(size));
     const fromImage = (img, srgb, repeat) => {
       const t = new THREE.Texture(img);
       t.wrapS = t.wrapT = THREE.RepeatWrapping;
@@ -519,7 +623,7 @@
     const N = (key, repeat = 1) => {
       if (images[key + '-normal']) return fromImage(images[key + '-normal'], false, repeat);
       const nk = key + '-normal';
-      cache[nk] = cache[nk] || heightToNormal(generated(key).heights, generated(key).canvas.width, TEXTURES[key].normal);
+      cache[nk] = cache[nk] || heightToNormal(generated(key).heights, generated(key).canvas.width, spec(key).normal);
       return toTexture(cache[nk], { srgb: false, repeat });
     };
 
@@ -533,10 +637,16 @@
       concrete: () => ({ map: T('concrete'), normalMap: N('concrete'), roughness: 0.62, color: pal.floorTint, texMeters: 4 }),
       terracotta: () => ({ map: T('travTiles'), normalMap: N('travTiles'), roughness: 0.75, color: pal.floorTint, texMeters: 1.6 }),
       stone: () => ({ map: T('stone'), normalMap: N('stone'), roughness: 0.7, color: pal.floorTint, texMeters: 3 }),
+      // Offline-only floors (commercial scenes rendered by tools/render).
+      herringbone: () => ({ map: T('herringbone'), normalMap: N('herringbone'), roughness: 0.46, color: pal.floorTint, texMeters: 1.0, uvRotation: Math.PI / 4 }),
+      carpet: () => ({ map: T('carpet'), normalMap: N('carpet'), roughness: 1, color: pal.floorTint, texMeters: 2 }),
+      polished: () => ({ map: T('concrete'), normalMap: N('concrete'), roughness: 0.32, color: pal.floorTint, texMeters: 4 }),
     };
     const floorSpec = (floorMaps[pal.floor] || floorMaps.oak)();
     const texMeters = floorSpec.texMeters;
+    const uvRotation = floorSpec.uvRotation;
     delete floorSpec.texMeters;
+    delete floorSpec.uvRotation;
 
     const M = {
       floor: std(floorSpec),
@@ -585,6 +695,7 @@
 
     // Metres covered by one texture repeat, used by worldUV().
     M.floor.userData.texMeters = texMeters;
+    if (uvRotation) M.floor.userData.uvRotation = uvRotation;
     M.wall.userData.texMeters = 3;
     M.ceiling.userData.texMeters = 4;
     M.oak.userData = { texMeters: 1.6, grainVertical: true };
@@ -601,6 +712,42 @@
     M.hedge.userData.texMeters = 1.5;
     M.bronze.userData.texMeters = 0.6;
 
+    // Commercial-interior materials, built on first use so the live hero
+    // (which never touches them) pays nothing for them.
+    const lazy = (name, make) => Object.defineProperty(M, name, {
+      configurable: true,
+      enumerable: false,
+      get() {
+        const value = make();
+        Object.defineProperty(M, name, { value, enumerable: false });
+        return value;
+      },
+    });
+    const felt = (color) => () => phys({ map: T('linen', 3), normalMap: N('linen', 3), color, roughness: 0.98, sheen: 0.35, sheenRoughness: 0.85, sheenColor: new THREE.Color('#ffffff') });
+    const withMeters = (m, metres, extra) => { m.userData = Object.assign({ texMeters: metres }, extra); return m; };
+    lazy('deskTop', () => std({ color: '#efece6', roughness: 0.42 }));
+    lazy('blackOak', () => withMeters(std({ map: T('wood'), normalMap: N('wood'), color: '#2c2826', roughness: 0.5 }), 1.6, { grainVertical: true }));
+    lazy('plasticDark', () => std({ color: '#2a2b2d', roughness: 0.5 }));
+    lazy('plasticLight', () => std({ color: '#e8e6e2', roughness: 0.45 }));
+    lazy('aluminium', () => std({ color: '#c7c8c8', metalness: 1, roughness: 0.32 }));
+    lazy('meshBack', () => phys({ map: T('linen', 8), color: '#3b3c3f', roughness: 0.9 }));
+    lazy('fabricDark', () => felt('#4a4c50')());
+    lazy('fabricAccent', () => felt(pal.accentFabric || '#c2673d')());
+    lazy('feltCharcoal', felt('#383a3e'));
+    lazy('feltGrey', felt('#8a8c8b'));
+    lazy('feltBlue', felt('#2d4a66'));
+    lazy('feltSage', felt('#8f9b86'));
+    lazy('feltWhite', felt('#e9e7e2'));
+    lazy('feltTerracotta', felt('#b9643d'));
+    lazy('shellWhite', () => phys({ color: '#eeebe5', roughness: 0.38, clearcoat: 0.25, clearcoatRoughness: 0.4 }));
+    lazy('paintAccent', () => withMeters(std({ map: T('plaster'), normalMap: N('plaster'), color: pal.accentPaint || '#cf6b3d', roughness: 0.92 }), 3));
+    lazy('paperAccent', () => std({ color: pal.paper || '#d9622b', roughness: 0.95, side: THREE.DoubleSide }));
+    lazy('ductPaint', () => std({ color: '#2e3034', roughness: 0.55, metalness: 0.25 }));
+    lazy('ceilingDark', () => withMeters(std({ map: T('concrete'), color: '#46484c', roughness: 0.92 }), 3));
+    lazy('towerGlass', () => withMeters(std({ map: T('facade'), metalness: 0.15, roughness: 0.22 }), 24));
+    lazy('towerStone', () => withMeters(std({ map: T('facadePunched'), roughness: 0.82 }), 24));
+    lazy('cityGround', () => withMeters(std({ map: T('concrete'), color: '#a8a093', roughness: 1 }), 14));
+
     M.palette = pal;
     M.textureCache = cache;
     return M;
@@ -612,12 +759,14 @@
 
   // Planar-project UVs in metres so textures keep real-world scale on any
   // box, regardless of its size. Picks the projection per face normal.
-  function worldUV(geometry, metres, grainVertical) {
+  // `rotation` turns the pattern in its plane (e.g. herringbone laid at 45°).
+  function worldUV(geometry, metres, grainVertical, rotation) {
     const pos = geometry.attributes.position;
     const nor = geometry.attributes.normal;
     if (!pos || !nor) return geometry;
     const uv = new Float32Array(pos.count * 2);
     const s = 1 / metres;
+    const cr = Math.cos(rotation || 0), sr = Math.sin(rotation || 0);
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
       const ax = Math.abs(nor.getX(i)), ay = Math.abs(nor.getY(i)), az = Math.abs(nor.getZ(i));
@@ -626,6 +775,7 @@
       else if (ax >= az) { u = z; v = y; }
       else { u = x; v = y; }
       if (grainVertical && !(ay >= ax && ay >= az)) { const t = u; u = v; v = t; }
+      if (rotation) { const t = u * cr - v * sr; v = u * sr + v * cr; u = t; }
       uv[i * 2] = u * s;
       uv[i * 2 + 1] = v * s;
     }
@@ -635,7 +785,7 @@
 
   function mesh(geometry, material, opts = {}) {
     if (material && material.userData && material.userData.texMeters && opts.worldUV !== false) {
-      worldUV(geometry, material.userData.texMeters, material.userData.grainVertical);
+      worldUV(geometry, material.userData.texMeters, material.userData.grainVertical, material.userData.uvRotation);
     }
     const m = new THREE.Mesh(geometry, material);
     m.castShadow = opts.cast !== false;
@@ -735,7 +885,7 @@
 
     // Olive-style tree or fig in a stone planter. Foliage is merged into a
     // single geometry for performance.
-    plant(M, { height = 2.2, spread = 0.8, seed = 1, leafSize = 1, leaves = 900, pot = true, potR = 0.3 } = {}) {
+    plant(M, { height = 2.2, spread = 0.8, seed = 1, leafSize = 1, leaves = 900, pot = true, potR = 0.3, trunk = 1 } = {}) {
       const r = rng(seed);
       const g = new THREE.Group();
       const potH = pot ? 0.55 : 0;
@@ -750,7 +900,7 @@
         new THREE.Vector3((r() - 0.5) * 0.12, potH + height * 0.25, (r() - 0.5) * 0.12),
         trunkTop,
       ]);
-      const trunkGeos = [new THREE.TubeGeometry(trunkCurve, 16, 0.035 * Math.max(1, height / 2.2), 8, false)];
+      const trunkGeos = [new THREE.TubeGeometry(trunkCurve, 16, 0.035 * Math.max(1, height / 2.2) * trunk, 8, false)];
       const clusters = [];
       const branchCount = 4 + Math.floor(r() * 3);
       for (let i = 0; i < branchCount; i++) {
@@ -762,7 +912,7 @@
           trunkTop.z + Math.sin(a) * len * 0.8,
         );
         const mid = trunkTop.clone().lerp(end, 0.5).add(new THREE.Vector3(0, 0.1, 0));
-        trunkGeos.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([trunkTop, mid, end]), 10, 0.016, 6, false));
+        trunkGeos.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([trunkTop, mid, end]), 10, 0.016 * trunk, 6, false));
         clusters.push(end);
       }
       clusters.push(trunkTop.clone().add(new THREE.Vector3(0, height * 0.35, 0)));
@@ -893,9 +1043,9 @@
       return g;
     },
 
-    diningChair(M, { seat } = {}) {
+    diningChair(M, { seat, frame } = {}) {
       const g = new THREE.Group();
-      const wood = M.oak;
+      const wood = frame || M.oak;
       [[-0.2, 0.2], [0.2, 0.2], [-0.2, -0.2], [0.2, -0.2]].forEach(([x, z]) => {
         const leg = cyl(0.016, 0.013, 0.45, wood, 12);
         g.add(at(leg, x, 0.225, z));
@@ -995,14 +1145,13 @@
       return g;
     },
 
-    pendant(M, { drop = 1, kind = 'globe', r = 0.2 } = {}) {
+    pendant(M, { drop = 1, kind = 'globe', r = 0.2, mat } = {}) {
       const g = new THREE.Group();
       g.add(at(cyl(0.004, 0.004, drop, M.blackSteel, 6, { cast: false }), 0, -drop / 2, 0));
       if (kind === 'globe') {
         g.add(at(mesh(new THREE.SphereGeometry(r, 48, 32), M.lightSoft, { worldUV: false, cast: false }), 0, -drop - r, 0));
       } else {
-        const dome = mesh(new THREE.SphereGeometry(r, 48, 16, 0, TAU, 0, Math.PI / 2), M.bronze, { worldUV: false });
-        dome.material = M.bronze;
+        const dome = mesh(new THREE.SphereGeometry(r, 48, 16, 0, TAU, 0, Math.PI / 2), mat || M.bronze, { worldUV: false });
         g.add(at(dome, 0, -drop - r * 0.2, 0));
         dome.scale.y = 0.7;
         const disc = mesh(new THREE.CircleGeometry(r * 0.9, 32), M.light, { worldUV: false, cast: false });
@@ -1231,6 +1380,390 @@
       g.add(at(fire, 0, -h / 2 + 0.08, 0.02));
       return g;
     },
+
+    /* ---- Commercial interiors (offices, reception, studio) ------------- */
+
+    // Ergonomic task chair: five-star base, upholstered seat, mesh back.
+    taskChair(M, { seat, back } = {}) {
+      const g = new THREE.Group();
+      for (let i = 0; i < 5; i++) {
+        const a = (i / 5) * TAU;
+        const spoke = box(0.3, 0.025, 0.045, M.plasticDark, 0.008);
+        spoke.position.set(Math.cos(a) * 0.15, 0.07, Math.sin(a) * 0.15);
+        spoke.rotation.y = -a;
+        g.add(spoke);
+        g.add(at(mesh(new THREE.SphereGeometry(0.03, 12, 8), M.plasticDark, { worldUV: false }), Math.cos(a) * 0.29, 0.03, Math.sin(a) * 0.29));
+      }
+      g.add(at(cyl(0.035, 0.035, 0.06, M.plasticDark, 16), 0, 0.09, 0));
+      g.add(at(cyl(0.022, 0.022, 0.3, M.aluminium, 12), 0, 0.27, 0));
+      g.add(at(box(0.34, 0.04, 0.3, M.plasticDark, 0.01), 0, 0.42, 0));
+      g.add(at(box(0.5, 0.08, 0.48, seat || M.fabricDark, 0.035, { segments: 4 }), 0, 0.48, 0.02));
+      g.add(at(box(0.05, 0.4, 0.04, M.plasticDark, 0.01), 0, 0.62, -0.25));
+      const backrest = group(
+        box(0.46, 0.56, 0.035, back || M.meshBack, 0.03, { segments: 3 }),
+        at(box(0.48, 0.58, 0.02, M.plasticDark, 0.012), 0, 0, -0.025),
+      );
+      backrest.position.set(0, 0.88, -0.25);
+      backrest.rotation.x = -0.12;
+      g.add(backrest);
+      [-1, 1].forEach((sx) => {
+        g.add(at(box(0.03, 0.2, 0.04, M.plasticDark, 0.008), sx * 0.27, 0.6, 0.0));
+        g.add(at(box(0.07, 0.03, 0.26, M.plasticDark, 0.012), sx * 0.27, 0.71, 0.02));
+      });
+      return g;
+    },
+
+    // Desk monitor on a slim stand; the screen faces +Z.
+    monitor(M, { w = 0.6, h = 0.36 } = {}) {
+      const g = new THREE.Group();
+      g.add(at(box(0.24, 0.012, 0.18, M.plasticDark, 0.004), 0, 0.006, 0));
+      g.add(at(box(0.05, 0.3, 0.025, M.plasticDark, 0.006), 0, 0.16, -0.04));
+      const screen = group(
+        box(w, h, 0.022, M.plasticDark, 0.006),
+        at(box(w - 0.02, h - 0.02, 0.002, M.screen, 0, { cast: false, worldUV: false }), 0, 0.004, 0.0115),
+      );
+      screen.position.set(0, 0.32 + h / 2, -0.02);
+      g.add(screen);
+      return g;
+    },
+
+    laptop(M) {
+      const g = new THREE.Group();
+      g.add(at(box(0.32, 0.014, 0.22, M.aluminium, 0.004), 0, 0.007, 0));
+      const lid = group(
+        at(box(0.32, 0.21, 0.008, M.aluminium, 0.004), 0, 0.105, 0),
+        at(box(0.3, 0.19, 0.001, M.screen, 0, { cast: false, worldUV: false }), 0, 0.105, 0.0045),
+      );
+      lid.position.set(0, 0.014, -0.11);
+      lid.rotation.x = -0.25;
+      g.add(lid);
+      return g;
+    },
+
+    // Double-sided bench desk: `perSide` places each side, a central planter
+    // trough (or felt screen), monitors, keyboards and task chairs.
+    workstation(M, { perSide = 3, seat = 1.4, depth = 0.75, top, planter = true, chairs = true, seed = 3 } = {}) {
+      const g = new THREE.Group();
+      const r = rng(seed);
+      const L = perSide * seat;
+      g.add(at(box(L, 0.028, depth * 2, top || M.deskTop, 0.006), 0, 0.736, 0));
+      for (let i = 0; i <= perSide; i++) {
+        const x = Math.min(L / 2 - 0.05, Math.max(-L / 2 + 0.05, -L / 2 + seat * i));
+        [-1, 1].forEach((sz) => g.add(at(box(0.05, 0.72, 0.05, M.blackSteel, 0.006), x, 0.36, sz * (depth - 0.12))));
+        g.add(at(box(0.05, 0.03, depth * 2 - 0.2, M.blackSteel, 0.004), x, 0.015, 0));
+        g.add(at(box(0.05, 0.04, depth * 2 - 0.24, M.blackSteel, 0.004), x, 0.7, 0));
+      }
+      if (planter) {
+        g.add(at(Objects.planterBox(M, { w: L - 0.2, h: 0.24, d: 0.24, mat: M.clay, seed: seed + 20, scale: 0.42 }), 0, 0.75, 0));
+      } else {
+        g.add(at(box(L - 0.1, 0.4, 0.025, M.feltSage, 0.01), 0, 0.95, 0));
+      }
+      [-1, 1].forEach((side) => {
+        for (let i = 0; i < perSide; i++) {
+          const x = -L / 2 + seat * (i + 0.5);
+          const ry = side > 0 ? 0 : Math.PI;
+          const pick = r();
+          if (pick < 0.75) g.add(at(Objects.monitor(M), x + (r() - 0.5) * 0.1, 0.75, side * 0.36, ry));
+          if (pick > 0.5) g.add(at(Objects.laptop(M), x + 0.36, 0.75, side * 0.52, ry + (r() - 0.5) * 0.3));
+          g.add(at(box(0.42, 0.018, 0.14, M.plasticLight, 0.004), x, 0.759, side * 0.56, ry));
+          if (r() < 0.5) g.add(at(Objects.books(M, { count: 2, seed: seed * 7 + i }), x - 0.45, 0.75, side * 0.5, ry + 0.3));
+          if (r() < 0.45) g.add(at(Objects.vase(M, { h: 0.1, r: 0.04, variant: 2, mat: r() < 0.5 ? M.ceramic : M.clay }), x + 0.5, 0.75, side * 0.3));
+          if (chairs) g.add(at(Objects.taskChair(M), x + (r() - 0.5) * 0.18, 0, side * (depth + 0.38 + r() * 0.12), (side > 0 ? Math.PI : 0) + (r() - 0.5) * 0.5));
+        }
+      });
+      return g;
+    },
+
+    // Rectangular planter with a row of small olive-like plants.
+    planterBox(M, { w = 1.2, h = 0.6, d = 0.4, mat, seed = 9, scale = 1 } = {}) {
+      const g = new THREE.Group();
+      g.add(at(box(w, h, d, mat || M.clay, 0.02), 0, h / 2, 0));
+      g.add(at(box(w - 0.04, 0.02, d - 0.04, M.soil, 0, { cast: false }), 0, h - 0.015, 0));
+      const n = Math.max(1, Math.round(w / (0.42 * scale)));
+      for (let i = 0; i < n; i++) {
+        const x = -w / 2 + (w / n) * (i + 0.5);
+        g.add(at(Objects.plant(M, { height: (0.5 + ((i * 37) % 10) / 30) * scale, spread: 0.34 * scale, seed: seed + i, pot: false, leaves: Math.round(420 * scale), leafSize: 1.15 * Math.sqrt(scale), trunk: 0.3 * Math.max(scale, 0.5) }), x, h - 0.02, 0));
+      }
+      return g;
+    },
+
+    // Large drum planter (terracotta) with a specimen tree.
+    drumPlanter(M, { r = 0.7, h = 0.9, mat, seed = 13 } = {}) {
+      const g = new THREE.Group();
+      g.add(at(cyl(r, r * 0.96, h, mat || M.clay, 64), 0, h / 2, 0));
+      g.add(at(cyl(r - 0.04, r - 0.04, 0.02, M.soil, 48), 0, h - 0.02, 0));
+      g.add(at(Objects.plant(M, { height: 1.7, spread: 0.85, seed, pot: false, leaves: 1300, leafSize: 1.3 }), 0, h - 0.02, 0));
+      g.add(at(Objects.plant(M, { height: 0.5, spread: 0.45, seed: seed + 3, pot: false, leaves: 380, leafSize: 1.1 }), r * 0.5, h - 0.02, r * 0.3));
+      return g;
+    },
+
+    // Upholstered banquette with a channel-tufted high back; faces +Z.
+    banquette(M, { w = 3, mat, base } = {}) {
+      const g = new THREE.Group();
+      const fab = mat || M.fabricAccent;
+      g.add(at(box(w - 0.06, 0.1, 0.52, base || M.charcoal, 0.01), 0, 0.05, 0.02));
+      g.add(at(box(w, 0.3, 0.6, fab, 0.04), 0, 0.25, 0));
+      g.add(at(box(w - 0.04, 0.12, 0.52, fab, 0.05, { segments: 4 }), 0, 0.46, 0.04));
+      const n = Math.max(2, Math.round(w / 0.42));
+      for (let i = 0; i < n; i++) {
+        const p = box(w / n - 0.012, 0.72, 0.14, fab, 0.06, { segments: 4 });
+        p.rotation.x = -0.08;
+        g.add(at(p, -w / 2 + (w / n) * (i + 0.5), 0.9, -0.23));
+      }
+      return g;
+    },
+
+    cafeTable(M, { r = 0.38, h = 0.74, top } = {}) {
+      const g = new THREE.Group();
+      g.add(at(cyl(r, r, 0.03, top || M.marble, 48), 0, h - 0.015, 0));
+      g.add(at(cyl(0.03, 0.03, h - 0.04, M.blackSteel, 16), 0, (h - 0.04) / 2 + 0.01, 0));
+      g.add(at(cyl(0.22, 0.24, 0.02, M.blackSteel, 32), 0, 0.01, 0));
+      return g;
+    },
+
+    // Moulded shell chair on splayed oak legs; faces +Z.
+    shellChair(M, { mat, legs } = {}) {
+      const g = new THREE.Group();
+      const shell = mat || M.shellWhite;
+      [[-0.19, 0.18], [0.19, 0.18], [-0.19, -0.18], [0.19, -0.18]].forEach(([x, z]) => {
+        const leg = cyl(0.014, 0.011, 0.46, legs || M.oak, 10);
+        leg.position.set(x, 0.225, z);
+        leg.rotation.set(z > 0 ? 0.08 : -0.08, 0, x > 0 ? -0.08 : 0.08);
+        g.add(leg);
+      });
+      g.add(at(box(0.46, 0.05, 0.44, shell, 0.025, { segments: 3 }), 0, 0.47, 0.01));
+      const back = mesh(new THREE.TorusGeometry(0.22, 0.026, 12, 40, Math.PI), shell, { worldUV: false });
+      back.rotation.x = -Math.PI / 2;
+      back.scale.set(1, 1, 4.6);
+      back.position.set(0, 0.7, 0.02);
+      g.add(back);
+      return g;
+    },
+
+    // Reception counter: stone front, oak transaction ledge with a soft
+    // LED wash, and a staff work surface behind. The visitor side is +Z.
+    receptionDesk(M, { w = 2.8, front, top } = {}) {
+      const g = new THREE.Group();
+      g.add(at(box(w, 1.0, 0.7, front || M.marbleDark, 0.008), 0, 0.56, 0));
+      g.add(at(box(w - 0.06, 0.06, 0.64, M.charcoal, 0, { cast: false }), 0, 0.03, -0.02));
+      g.add(at(box(w + 0.06, 0.04, 0.38, top || M.oak, 0.006), 0, 1.08, 0.18));
+      g.add(at(box(w - 0.1, 0.008, 0.02, M.lightSoft, 0, { cast: false, worldUV: false }), 0, 1.055, 0.34));
+      g.add(at(box(w - 0.2, 0.03, 0.5, M.deskTop, 0.004), 0, 0.74, -0.55));
+      g.add(at(Objects.monitor(M), -0.5, 0.755, -0.6, Math.PI));
+      g.add(at(Objects.taskChair(M), -0.5, 0, -1.15));
+      g.add(at(Objects.vase(M, { h: 0.26, r: 0.07, variant: 1, mat: M.ceramic }), w / 2 - 0.3, 1.1, 0.16));
+      return g;
+    },
+
+    // Backlit feature wall: an inset panel framed by a perimeter glow, with
+    // an abstract brass emblem (deliberately not a real-world logo).
+    brandWall(M, { w = 4.4, h = 3.2, panel } = {}) {
+      const g = new THREE.Group();
+      g.add(at(box(w, h, 0.06, M.wall), 0, h / 2, 0.03));
+      const iw = w - 0.9, ih = h - 1.3, cy = 0.55 + ih / 2;
+      [[0, cy + ih / 2 + 0.02, iw + 0.06, 0.02], [0, cy - ih / 2 - 0.02, iw + 0.06, 0.02]].forEach(([x, y, lw, lh]) => g.add(at(box(lw, lh, 0.015, M.light, 0, { cast: false, worldUV: false }), x, y, 0.065)));
+      [[-iw / 2 - 0.02], [iw / 2 + 0.02]].forEach(([x]) => g.add(at(box(0.02, ih + 0.06, 0.015, M.light, 0, { cast: false, worldUV: false }), x, cy, 0.065)));
+      g.add(at(box(iw, ih, 0.05, panel || M.oakSlat, 0.004), 0, cy, 0.105));
+      const ring = mesh(new THREE.TorusGeometry(0.3, 0.028, 16, 72), M.brass, { worldUV: false });
+      g.add(at(ring, 0, cy + 0.12, 0.16));
+      const leaf = mesh(new THREE.SphereGeometry(1, 32, 16), M.brass, { worldUV: false });
+      leaf.scale.set(0.09, 0.2, 0.025);
+      leaf.rotation.z = -0.6;
+      g.add(at(leaf, 0, cy + 0.12, 0.165));
+      g.add(at(box(0.9, 0.025, 0.02, M.brass, 0.005), 0, cy - 0.38, 0.145));
+      return g;
+    },
+
+    meetingTable(M, { w = 3.2, d = 1.2, top, legs } = {}) {
+      const g = new THREE.Group();
+      const t = top || M.blackOak;
+      g.add(at(box(w, 0.05, d, t, 0.02, { segments: 3 }), 0, 0.745, 0));
+      [-1, 1].forEach((sx) => g.add(at(box(0.07, 0.72, d * 0.55, legs || t, 0.01), sx * (w / 2 - 0.42), 0.36, 0)));
+      g.add(at(box(w - 0.84, 0.05, 0.06, legs || t, 0.01), 0, 0.2, 0));
+      g.add(at(box(0.26, 0.012, 0.12, M.blackSteel, 0.004), 0, 0.776, 0));
+      return g;
+    },
+
+    wallScreen(M, { w = 1.65, h = 0.95 } = {}) {
+      return group(
+        at(box(w, h, 0.035, M.plasticDark, 0.006), 0, 0, 0.0175),
+        at(box(w - 0.025, h - 0.025, 0.002, M.screen, 0, { cast: false, worldUV: false }), 0, 0, 0.036),
+      );
+    },
+
+    // Grid of fabric-wrapped acoustic panels on a wall (faces +Z).
+    acousticPanels(M, { cols = 6, rows = 4, size = 0.6, gap = 0.03, mats, seed = 2 } = {}) {
+      const g = new THREE.Group();
+      const r = rng(seed);
+      const list = mats || [M.feltCharcoal, M.feltCharcoal, M.feltGrey, M.feltBlue];
+      const w = cols * size + (cols - 1) * gap;
+      for (let i = 0; i < cols; i++) {
+        for (let j = 0; j < rows; j++) {
+          const p = box(size, size, 0.05, list[Math.floor(r() * list.length)], 0.012, { segments: 2 });
+          g.add(at(p, -w / 2 + size / 2 + i * (size + gap), size / 2 + j * (size + gap), 0.025));
+        }
+      }
+      return g;
+    },
+
+    // Suspended felt ceiling cloud; origin at the ceiling.
+    acousticCloud(M, { w = 2, d = 1.1, mat, drop = 0.4 } = {}) {
+      const g = new THREE.Group();
+      g.add(at(box(w, 0.07, d, mat || M.feltWhite, 0.035, { segments: 4 }), 0, -drop, 0));
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => g.add(at(cyl(0.003, 0.003, drop, M.blackSteel, 6, { cast: false }), sx * (w / 2 - 0.15), -drop / 2, sz * (d / 2 - 0.15))));
+      return g;
+    },
+
+    // Recessed linear light flush with the ceiling; origin at the ceiling.
+    lightLine(M, { len = 3, w = 0.08 } = {}) {
+      return group(at(box(len, 0.012, w, M.light, 0, { cast: false, worldUV: false }), 0, -0.005, 0));
+    },
+
+    // Exposed round duct along X with hangers; origin at the duct centre.
+    duct(M, { len = 8, r = 0.28 } = {}) {
+      const g = new THREE.Group();
+      const d = cyl(r, r, len, M.ductPaint, 40);
+      d.rotation.z = Math.PI / 2;
+      g.add(d);
+      for (let x = -len / 2 + 0.8; x < len / 2; x += 1.6) {
+        g.add(at(box(0.03, 0.6, 0.03, M.blackSteel), x, r + 0.3, 0));
+        const band = mesh(new THREE.TorusGeometry(r + 0.006, 0.012, 8, 40), M.blackSteel, { worldUV: false });
+        band.rotation.y = Math.PI / 2;
+        g.add(at(band, x, 0, 0));
+      }
+      return g;
+    },
+
+    column(M, { h = 3.3, r = 0.3, mat } = {}) {
+      return group(at(cyl(r, r, h, mat || M.concrete, 48), 0, h / 2, 0));
+    },
+
+    // Photography softbox on a tripod, aimed along +Z and tilted down.
+    softbox(M, { h = 1.9, tilt = 0.28 } = {}) {
+      const g = new THREE.Group();
+      const splay = 0.42;
+      [0, 1, 2].forEach((i) => {
+        const a = (i / 3) * TAU + 0.3;
+        const leg = cyl(0.011, 0.011, 1.0, M.blackSteel, 8);
+        leg.position.set(Math.cos(a) * 0.22, 0.47, Math.sin(a) * 0.22);
+        leg.rotation.set(-Math.sin(a) * splay, 0, Math.cos(a) * splay);
+        g.add(leg);
+      });
+      g.add(at(cyl(0.014, 0.014, h - 0.9, M.blackSteel, 8), 0, 0.9 + (h - 0.9) / 2, 0));
+      const head = group(
+        box(0.62, 0.82, 0.32, M.charcoal, 0.02),
+        at(box(0.58, 0.78, 0.01, M.lightSoft, 0, { cast: false, worldUV: false }), 0, 0, 0.162),
+      );
+      head.position.set(0, h, 0.05);
+      head.rotation.x = tilt;
+      g.add(head);
+      return g;
+    },
+
+    // Seamless paper backdrop: a vertical drop that sweeps into the floor,
+    // hung from a roll on two stands. Faces +Z.
+    backdrop(M, { w = 3.2, h = 3, depth = 1.6, r = 0.6, mat } = {}) {
+      const g = new THREE.Group();
+      const profile = [];
+      profile.push([0, h]);
+      const steps = 14;
+      for (let i = 0; i <= steps; i++) {
+        const a = Math.PI + (Math.PI / 2) * (i / steps);
+        profile.push([r + r * Math.cos(a), r + r * Math.sin(a)]);
+      }
+      profile.push([r + depth, 0]);
+      const pos = [], idx = [];
+      profile.forEach(([z, y]) => { pos.push(-w / 2, y + 0.004, z, w / 2, y + 0.004, z); });
+      for (let i = 0; i < profile.length - 1; i++) {
+        const a = i * 2, b = a + 1, c = a + 2, d = a + 3;
+        idx.push(a, c, b, b, c, d);
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      g.add(mesh(geo, mat || M.paperAccent, { worldUV: false, cast: false }));
+      [-1, 1].forEach((sx) => g.add(at(cyl(0.015, 0.015, h + 0.15, M.blackSteel, 8), sx * (w / 2 + 0.12), (h + 0.15) / 2, -0.06)));
+      const roll = cyl(0.05, 0.05, w + 0.3, mat || M.paperAccent, 24);
+      roll.rotation.z = Math.PI / 2;
+      g.add(at(roll, 0, h + 0.08, -0.06));
+      return g;
+    },
+
+    // Camera on a tripod (for the studio scene); lens faces +Z.
+    cameraRig(M, { h = 1.45 } = {}) {
+      const g = new THREE.Group();
+      [0, 1, 2].forEach((i) => {
+        const a = (i / 3) * TAU;
+        const leg = cyl(0.01, 0.008, h, M.blackSteel, 8);
+        leg.position.set(Math.cos(a) * 0.18, h / 2, Math.sin(a) * 0.18);
+        leg.rotation.set(-Math.sin(a) * 0.24, 0, Math.cos(a) * 0.24);
+        g.add(leg);
+      });
+      g.add(at(box(0.14, 0.1, 0.08, M.plasticDark, 0.01), 0, h + 0.06, 0));
+      const lens = cyl(0.035, 0.035, 0.1, M.plasticDark, 24);
+      lens.rotation.x = Math.PI / 2;
+      g.add(at(lens, 0, h + 0.06, 0.09));
+      return g;
+    },
+
+    // Black steel shelving with oak shelves and styled props.
+    metalShelf(M, { w = 1.8, h = 2.2, d = 0.45, levels = 5, seed = 4 } = {}) {
+      const g = new THREE.Group();
+      const r = rng(seed);
+      [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => g.add(at(box(0.03, h, 0.03, M.blackSteel), sx * (w / 2 - 0.015), h / 2, sz * (d / 2 - 0.015))));
+      for (let i = 0; i < levels; i++) {
+        const y = 0.1 + (h - 0.15) * (i / (levels - 1));
+        g.add(at(box(w, 0.025, d, M.oak, 0.003), 0, y, 0));
+        if (i === levels - 1) continue;
+        for (let k = 0; k < 3; k++) {
+          const x = -w / 2 + (w / 3) * (k + 0.5);
+          const pick = r();
+          if (pick < 0.35) g.add(at(Objects.books(M, { count: 3 + Math.floor(r() * 3), seed: seed * 13 + i * 3 + k }), x, y + 0.012, 0));
+          else if (pick < 0.6) g.add(at(Objects.vase(M, { h: 0.16 + r() * 0.12, r: 0.06 + r() * 0.03, variant: Math.floor(r() * 3), mat: r() < 0.5 ? M.ceramic : M.ceramicDark }), x, y + 0.012, 0));
+          else if (pick < 0.85) g.add(at(box(0.32, 0.2, 0.3, r() < 0.5 ? M.paper : M.charcoal, 0.01), x, y + 0.112, 0));
+        }
+      }
+      return g;
+    },
+
+    // Feature wall with arched alcoves cut into it (faces +Z). Each arch:
+    // { x, aw, ah } — centre, width and height of the opening.
+    archWall(M, { w = 5, h = 3.3, depth = 0.16, arches = [], mat } = {}) {
+      const shape = new THREE.Shape();
+      shape.moveTo(-w / 2, 0);
+      arches.slice().sort((a, b) => a.x - b.x).forEach(({ x, aw, ah }) => {
+        const rr = aw / 2;
+        shape.lineTo(x - rr, 0);
+        shape.lineTo(x - rr, ah - rr);
+        shape.absarc(x, ah - rr, rr, Math.PI, 0, true);
+        shape.lineTo(x + rr, 0);
+      });
+      shape.lineTo(w / 2, 0);
+      shape.lineTo(w / 2, h);
+      shape.lineTo(-w / 2, h);
+      shape.lineTo(-w / 2, 0);
+      const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: false, curveSegments: 40 });
+      geo.translate(0, 0, -depth / 2);
+      return group(mesh(geo, mat || M.paintAccent));
+    },
+
+    // Full-height glass partition with slim black steel framing; the glass
+    // lies in the XY plane, origin at floor centre.
+    glassPartition(M, { w = 4, h = 3, panes = 3, frame } = {}) {
+      const g = new THREE.Group();
+      const f = frame || M.blackSteel;
+      const t = 0.04;
+      g.add(at(box(w, t, 0.06, f), 0, t / 2, 0));
+      g.add(at(box(w, t, 0.06, f), 0, h - t / 2, 0));
+      for (let i = 0; i <= panes; i++) {
+        const x = Math.min(w / 2 - t / 2, Math.max(-w / 2 + t / 2, -w / 2 + (w / panes) * i));
+        g.add(at(box(t, h, 0.06, f), x, h / 2, 0));
+      }
+      g.add(at(box(w, 0.03, 0.05, f), 0, 2.25, 0));
+      g.add(at(mesh(new THREE.BoxGeometry(w - t, h - t * 2, 0.012), M.glass, { worldUV: false, cast: false }), 0, h / 2, 0));
+      return g;
+    },
   };
 
   /* ------------------------------------------------------------------------
@@ -1279,12 +1812,12 @@
   // Room shell centred on the origin: floor at y=0, spans x∈[-w/2,w/2],
   // z∈[-d/2,d/2]. `openings` per side, measured along each wall from the
   // viewer's left when standing inside facing that wall.
-  function roomShell(M, { w = 9, d = 7, h = 3.3, t = 0.25, openings = {}, walls = {}, ceiling = true, glass = false, skirting = true, frontWall = false, mullion = 1.2 }) {
+  function roomShell(M, { w = 9, d = 7, h = 3.3, t = 0.25, openings = {}, walls = {}, ceiling = true, ceilingMat = null, glass = false, skirting = true, frontWall = false, mullion = 1.2 }) {
     const g = new THREE.Group();
     g.name = 'shell';
     const floor = box(w + t * 2, 0.1, d + t * 2, M.floor, 0, { cast: false });
     g.add(at(floor, 0, -0.05, 0));
-    if (ceiling) g.add(at(box(w + t * 2, 0.12, d + t * 2, M.ceiling, 0, { cast: false }), 0, h + 0.06, 0));
+    if (ceiling) g.add(at(box(w + t * 2, 0.12, d + t * 2, ceilingMat || M.ceiling, 0, { cast: false }), 0, h + 0.06, 0));
 
     const sides = {
       back: { len: w, pos: [0, 0, -d / 2 - t / 2], ry: 0 },
@@ -1368,6 +1901,47 @@
     return g;
   }
 
+  // City context for high-floor offices and apartments: towers of glass and
+  // stone around the building, seen from about twelve floors up.
+  // `sun` (the room's sun position) keeps that bearing clear of towers so
+  // daylight still reaches the interior.
+  function cityscape(M, { seed = 91, y = -36, count = 70, sun = null } = {}) {
+    const g = new THREE.Group();
+    const r = rng(seed);
+    g.add(at(box(900, 0.2, 900, M.cityGround, 0, { cast: false }), 0, y - 0.1, 0));
+    const placed = [];
+    const sunAz = sun ? Math.atan2(sun[2], sun[0]) : null;
+    for (let i = 0; i < count; i++) {
+      const a = r() * TAU;
+      const dist = 42 + Math.pow(r(), 0.75) * 260;
+      const w = 16 + r() * 22, d = 16 + r() * 22;
+      const x = Math.cos(a) * dist, z = Math.sin(a) * dist;
+      if (sunAz !== null && Math.abs(Math.atan2(Math.sin(a - sunAz), Math.cos(a - sunAz))) < 0.55) continue;
+      if (placed.some(([px, pz, pr]) => Math.hypot(px - x, pz - z) < pr + Math.max(w, d) * 0.6)) continue;
+      placed.push([x, z, Math.max(w, d) * 0.6]);
+      const h = 28 + Math.pow(r(), 1.5) * 240;
+      const mat = r() < 0.68 ? M.towerGlass : M.towerStone;
+      const ry = r() < 0.8 ? 0 : Math.PI / 4;
+      g.add(at(box(w, h, d, mat), x, y + h / 2, z, ry));
+      if (r() < 0.4) {
+        const h2 = h * (0.08 + r() * 0.16);
+        g.add(at(box(w * 0.62, h2, d * 0.62, mat), x, y + h + h2 / 2, z, ry));
+      }
+    }
+    // A few slender landmark towers far off.
+    for (let i = 0; i < 3; i++) {
+      const a = -Math.PI / 2 + (i - 1) * 0.9 + r() * 0.3;
+      const dist = 320 + r() * 120;
+      const x = Math.cos(a) * dist, z = Math.sin(a) * dist;
+      let hy = y;
+      [[30, 140], [22, 110], [14, 90], [6, 70]].forEach(([wd, hh]) => {
+        g.add(at(box(wd, hh, wd, M.towerGlass), x, hy + hh / 2, z));
+        hy += hh;
+      });
+    }
+    return g;
+  }
+
   /* ------------------------------------------------------------------------
      Camera helper
      A camera spec is { pos, target, fov, shift } where `shift` is a vertical
@@ -1398,6 +1972,9 @@
      ------------------------------------------------------------------------ */
 
   const DAY = { sun: [9, 7, -12], sunColor: '#fff1dc', sunIntensity: 3.2, skyTop: '#c3d3e2', skyBottom: '#f1efe9', envIntensity: 1, exposure: 1 };
+  // Deep office floor plates get no garden bounce, so they take a higher
+  // (Gulf) sun, a brighter sky, working ceiling lights and more exposure.
+  const OFFICE_DAY = Object.assign({}, DAY, { sunIntensity: 3.6, skyTop: '#b9cde0', envIntensity: 1.5, exposure: 1.9, lampIntensity: 9, lampSoftIntensity: 3 });
 
   const Rooms = {
     // Signature living room — used by the hero and several stills.
@@ -1465,7 +2042,7 @@
         w: W, d: D, h: H, glass: !!o.glass, frontWall: !!o.frontWall,
         openings: { right: [{ x0: 0.7, x1: 4.9, y0: 0, y1: H }] },
       }));
-      if (!o.noExterior) root.add(exterior(M, { trees: o.coastal ? 2 : 6, seed: 41, water: o.coastal ? 'sea' : null }));
+      if (!o.noExterior) root.add(o.city ? cityscape(M, { seed: 47, sun: [12, 5.5, 2] }) : exterior(M, { trees: o.coastal ? 2 : 6, seed: 41, water: o.coastal ? 'sea' : null }));
 
       // Headboard wall in oak slats, bed centred on it.
       root.add(at(Objects.slatWall(M, { w: 4.2, h: H }), -0.4, 0, -D / 2));
@@ -1629,6 +2206,7 @@
           main: { pos: [4.6, 1.5, 4.2], target: [-1.5, 1.8, -2.8], fov: 60, shift: 0.14 },
           stair: { pos: [0.6, 1.5, 3.9], target: [-5.6, 2.0, 0.4], fov: 54, shift: 0.12 },
           window: { pos: [-4.2, 1.5, 3.6], target: [3.2, 2, -4], fov: 58, shift: 0.14 },
+          hall: { pos: [3.4, 1.6, 4.3], target: [-4.6, 2.0, -1.2], fov: 62, shift: 0.12 },
         },
       };
     },
@@ -1669,6 +2247,253 @@
         lighting: Object.assign({}, DAY, { sun: [6, 5, 4], sunIntensity: 2.4 }),
         cameras: {
           main: { pos: [0.35, 1.05, 2.2], target: [0, 0.7, -0.35], fov: 32 },
+        },
+      };
+    },
+
+    /* ---- Commercial interiors ------------------------------------------ */
+
+    // Open-plan office on a high floor: bench desks with planter troughs,
+    // an oak library wall, a collaboration table and city views.
+    workspace(M, o = {}) {
+      const W = 14, D = 10, H = 3.3;
+      const root = new THREE.Group();
+      root.add(roomShell(M, {
+        w: W, d: D, h: H, frontWall: !!o.frontWall, ceiling: !o.noCeiling, mullion: 1.5,
+        openings: { back: [{ x0: 4.2, x1: 13.6, y0: 0, y1: H }], right: [{ x0: 0.5, x1: 8.6, y0: 0, y1: H }] },
+      }));
+      const light = Object.assign({}, OFFICE_DAY, { sun: [-6, 12, -10] });
+      if (!o.noExterior) root.add(cityscape(M, { seed: 101, sun: light.sun }));
+
+      // Library wall in oak, a terracotta drum planter and a concrete column.
+      root.add(at(Objects.bookcase(M, { w: 7, h: H - 0.25, cols: 9, rows: 6, seed: 11, mat: M.oak }), -W / 2 + 0.2, 0, -0.6, Math.PI / 2));
+      root.add(at(Objects.drumPlanter(M, { r: 0.75, h: 0.9, seed: 14 }), -4.7, 0, -3.9));
+      root.add(at(Objects.bigLeafPlant(M, { height: 1.6, seed: 9 }), -2.9, 0, -4.3));
+      root.add(at(Objects.column(M, { h: H, r: 0.32 }), -0.6, 0, -3.4));
+      root.add(at(Objects.artwork(M, { w: 1.4, h: 1.0, seed: 6, frame: 'black' }), -4.7, 1.95, -D / 2 + 0.01));
+
+      // Two bench-desk clusters with planter troughs, under felt clouds.
+      // (A cutaway "plan" view drops the ceiling and everything hung from it.)
+      const hung = !o.noCeiling;
+      [-1.7, 2.0].forEach((z, i) => {
+        root.add(at(Objects.workstation(M, { perSide: 3, seed: 5 + i * 4 }), 2.6, 0, z));
+        if (hung) [1.6, 3.6].forEach((x, k) => root.add(at(Objects.acousticCloud(M, { w: 1.8, d: 1.3, drop: 0.35, mat: (i + k) % 2 ? M.feltSage : M.feltWhite }), x, H, z)));
+      });
+
+      // Collaboration table below a linear pendant.
+      root.add(at(Objects.diningTable(M, { w: 3.2, d: 1.1 }), -3.9, 0, 0.9));
+      [-4.9, -3.9, -2.9].forEach((x) => {
+        root.add(at(Objects.shellChair(M), x, 0, 0.12));
+        root.add(at(Objects.shellChair(M), x, 0, 1.68, Math.PI));
+      });
+      root.add(at(Objects.shellChair(M), -5.85, 0, 0.9, Math.PI / 2));
+      if (hung) root.add(at(Objects.linearPendant(M, { len: 2.6, drop: 1.4 }), -3.9, H, 0.9));
+      root.add(at(Objects.laptop(M), -4.3, 0.77, 0.75, 0.2));
+      root.add(at(Objects.books(M, { count: 3, seed: 31 }), -3.2, 0.77, 1.0, 0.5));
+      root.add(at(Objects.vase(M, { h: 0.28, r: 0.09, variant: 0, mat: M.clay }), -3.6, 0.77, 0.95));
+
+      root.add(at(Objects.plant(M, { height: 2.2, spread: 0.9, seed: 61, leaves: 1400 }), 6.1, 0, -4.2));
+      if (hung) [-3.6, -0.3, 3.2].forEach((z) => root.add(at(Objects.lightLine(M, { len: 11 }), 0, H, z)));
+
+      return {
+        root,
+        lighting: light,
+        cameras: {
+          main: { pos: [-6.2, 1.5, 4.5], target: [3.2, 1.2, -3.4], fov: 60, shift: 0.08 },
+          portrait: { pos: [6.2, 1.45, 0.3], target: [0.6, 1.05, -2.8], fov: 54, shift: 0.08 },
+          detail: { pos: [3.9, 1.6, -0.15], target: [3.1, 0.82, -1.6], fov: 46, shift: 0.02 },
+          collab: { pos: [-1.0, 1.45, 4.5], target: [-4.6, 1.25, -0.2], fov: 52, shift: 0.08 },
+          aisle: { pos: [6.6, 1.5, 0.15], target: [-5, 1.2, 0.1], fov: 56, shift: 0.08 },
+          square: { pos: [6.3, 1.55, 4.6], target: [-1.0, 1.15, -2.0], fov: 62, shift: 0.08 },
+          plan: { pos: [12, 18, 15], target: [0, -0.4, -0.3], fov: 32 },
+        },
+      };
+    },
+
+    // Breakout lounge: banquettes in terracotta arched alcoves, café tables
+    // and a lounge area by the glazing.
+    lounge(M, o = {}) {
+      const W = 11, D = 8.4, H = 3.3;
+      const root = new THREE.Group();
+      root.add(roomShell(M, {
+        w: W, d: D, h: H, frontWall: !!o.frontWall, mullion: 1.4,
+        openings: { back: [{ x0: 5.8, x1: 10.7, y0: 0, y1: H }], right: [{ x0: 0.5, x1: 6.5, y0: 0, y1: H }] },
+      }));
+      const light = Object.assign({}, OFFICE_DAY, { sun: [9, 11, -10] });
+      if (!o.noExterior) root.add(cityscape(M, { seed: 117, sun: light.sun }));
+
+      // Arched feature wall standing off the back wall to form alcoves.
+      const wallZ = -D / 2 + 0.75;
+      const arches = [{ x: -1.6, aw: 1.7, ah: 2.6 }, { x: 0.6, aw: 1.7, ah: 2.6 }];
+      root.add(at(Objects.archWall(M, { w: 5.6, h: H, depth: 0.16, arches }), -2.6, 0, wallZ));
+      arches.forEach(({ x }, i) => {
+        const cx = -2.6 + x;
+        root.add(at(Objects.banquette(M, { w: 1.6 }), cx, 0, -D / 2 + 0.33));
+        root.add(at(Objects.cafeTable(M, { r: 0.4 }), cx, 0, wallZ + 0.45));
+        [-0.36, 0.36].forEach((dx) => root.add(at(Objects.shellChair(M), cx + dx, 0, wallZ + 1.12, Math.PI + dx * 0.4)));
+        root.add(at(Objects.pendant(M, { drop: 1.1, kind: 'dome', r: 0.24, mat: M.blackSteel }), cx, H, -D / 2 + 0.45));
+        root.add(at(Objects.vase(M, { h: 0.14, r: 0.05, variant: i, mat: M.ceramic }), cx + 0.1, 0.75, wallZ + 0.42));
+      });
+      root.add(at(Objects.bigLeafPlant(M, { height: 1.5, seed: 12 }), -5.0, 0, wallZ + 0.6));
+
+      // Lounge by the window.
+      root.add(at(Objects.rug(M, { w: 4.2, d: 3.2 }), 3.0, 0, 0.1));
+      root.add(at(Objects.sofa(M, { w: 2.6, mat: M.linen }), 3.0, 0, 1.55, Math.PI));
+      root.add(at(Objects.loungeChair(M), 2.0, 0, -1.25));
+      root.add(at(Objects.loungeChair(M, { mat: M.fabricAccent }), 4.0, 0, -1.25));
+      root.add(at(Objects.coffeeTable(M), 3.0, 0, 0.15));
+      root.add(at(Objects.sideTable(M, { h: 0.45 }), 1.25, 0, 1.6));
+      [[2.6, 1.15], [3.0, 1.4], [3.4, 1.25]].forEach(([x, drop]) => root.add(at(Objects.pendant(M, { drop, kind: 'globe', r: 0.18 }), x, H, 0.15)));
+      root.add(at(Objects.plant(M, { height: 2.3, spread: 0.9, seed: 71, leaves: 1400 }), 4.9, 0, -3.5));
+      root.add(at(Objects.planterBox(M, { w: 2.2, h: 0.55, d: 0.45, seed: 40 }), 0.9, 0, -3.6));
+      root.add(at(Objects.sideboard(M, { w: 2.4, h: 0.72 }), -W / 2 + 0.25, 0, 1.6, Math.PI / 2));
+      root.add(at(Objects.artwork(M, { w: 1.3, h: 1.0, seed: 3 }), -W / 2 + 0.01, 1.8, 1.6, Math.PI / 2));
+      [-2.4, 0.6].forEach((z) => root.add(at(Objects.lightLine(M, { len: 9 }), 0, H, z)));
+
+      return {
+        root,
+        lighting: light,
+        cameras: {
+          portrait: { pos: [-0.5, 1.35, 1.7], target: [-3.0, 1.15, -3.0], fov: 54, shift: 0.08 },
+          detail: { pos: [-2.9, 1.25, -1.2], target: [-4.2, 0.85, -3.6], fov: 46, shift: 0.02 },
+          lounge: { pos: [-2.4, 1.45, 3.9], target: [3.0, 1.1, -2.2], fov: 52, shift: 0.08 },
+          main: { pos: [4.8, 1.5, 3.9], target: [-2.8, 1.2, -2.8], fov: 60, shift: 0.08 },
+        },
+      };
+    },
+
+    // Branded reception: stone counter before a backlit feature wall, a
+    // waiting area, and a glass-walled meeting room.
+    reception(M, o = {}) {
+      const W = 10, D = 8, H = 3.2;
+      const root = new THREE.Group();
+      root.add(roomShell(M, {
+        w: W, d: D, h: H, frontWall: !!o.frontWall, mullion: 1.2,
+        openings: { right: [{ x0: 0.6, x1: 4.6, y0: 0, y1: H }] },
+      }));
+      const light = Object.assign({}, OFFICE_DAY, { sun: [12, 10, 3] });
+      if (!o.noExterior) root.add(cityscape(M, { seed: 131, sun: light.sun }));
+
+      root.add(at(Objects.brandWall(M, { w: 4.6, h: H }), -1.9, 0, -D / 2));
+      root.add(at(Objects.receptionDesk(M, { w: 2.8 }), -1.9, 0, -2.0));
+      // Cove of light framing the reception zone.
+      [[-1.9, -3.3, 4.6, 0.04], [-1.9, -0.7, 4.6, 0.04]].forEach(([x, z, len, w]) => root.add(at(Objects.lightLine(M, { len, w }), x, H, z)));
+      [[-4.2], [0.4]].forEach(([x]) => root.add(at(group(at(box(0.04, 0.012, 2.6, M.light, 0, { cast: false, worldUV: false }), 0, -0.005, 0)), x, H, -2.0)));
+
+      // Glass meeting room on the right.
+      root.add(at(Objects.glassPartition(M, { w: 4.8, h: H, panes: 3 }), 1.6, 0, -1.6, Math.PI / 2));
+      root.add(at(Objects.glassPartition(M, { w: 3.4, h: H, panes: 2 }), 3.3, 0, 0.8));
+      root.add(at(Objects.meetingTable(M, { w: 2.6, d: 1.1, top: M.deskTop, legs: M.blackSteel }), 3.3, 0, -1.6, Math.PI / 2));
+      [-2.5, -1.6, -0.7].forEach((z) => {
+        root.add(at(Objects.taskChair(M), 2.55, 0, z, Math.PI / 2));
+        root.add(at(Objects.taskChair(M), 4.05, 0, z, -Math.PI / 2));
+      });
+      root.add(at(Objects.wallScreen(M, { w: 1.5, h: 0.85 }), 3.3, 1.5, -D / 2));
+      root.add(at(Objects.laptop(M), 3.2, 0.77, -1.2, Math.PI / 2));
+
+      // Waiting area.
+      root.add(at(Objects.rug(M, { w: 2.8, d: 2.2 }), -3.6, 0, 1.6));
+      root.add(at(Objects.sofa(M, { w: 2.4, mat: M.linen }), -4.45, 0, 1.6, Math.PI / 2));
+      root.add(at(Objects.coffeeTable(M, { kind: 'slab', mat: M.travertine }), -3.4, 0, 1.6));
+      root.add(at(Objects.loungeChair(M), -2.2, 0, 2.5, -Math.PI / 2 - 0.5));
+      root.add(at(Objects.plant(M, { height: 2.1, spread: 0.8, seed: 81, leaves: 1200 }), -4.5, 0, 3.4));
+      root.add(at(Objects.bigLeafPlant(M, { height: 1.5, seed: 16 }), 0.9, 0, -3.5));
+      root.add(at(Objects.artwork(M, { w: 1.2, h: 1.5, seed: 2 }), -W / 2 + 0.01, 1.7, 1.6, Math.PI / 2));
+      [1.6, 3.4].forEach((z) => root.add(at(Objects.lightLine(M, { len: 3 }), -2.2, H, z)));
+
+      return {
+        root,
+        lighting: light,
+        cameras: {
+          portrait: { pos: [-0.4, 1.45, 3.7], target: [-1.9, 1.3, -3.6], fov: 50, shift: 0.08 },
+          meeting: { pos: [0.2, 1.4, 2.8], target: [3.4, 0.95, -1.8], fov: 48, shift: 0.04 },
+          wait: { pos: [2.2, 1.45, 3.6], target: [-4.2, 1.1, 0.0], fov: 52, shift: 0.08 },
+          main: { pos: [3.8, 1.5, 3.8], target: [-2.2, 1.25, -2.8], fov: 60, shift: 0.08 },
+        },
+      };
+    },
+
+    // Meeting room: oak slat wall, herringbone floor (set by the palette),
+    // black table and chairs, screen and credenza.
+    meeting(M, o = {}) {
+      const W = 7, D = 6, H = 3.0;
+      const root = new THREE.Group();
+      root.add(roomShell(M, {
+        w: W, d: D, h: H, frontWall: !!o.frontWall, mullion: 1.2,
+        openings: { right: [{ x0: 1.0, x1: 5.0, y0: 0, y1: H }] },
+      }));
+      const light = Object.assign({}, OFFICE_DAY, { sun: [12, 9, 2] });
+      if (!o.noExterior) root.add(cityscape(M, { seed: 141, sun: light.sun }));
+
+      root.add(at(Objects.slatWall(M, { w: D, h: H }), -W / 2, 0, 0, Math.PI / 2));
+      root.add(at(Objects.wallScreen(M, { w: 1.9, h: 1.07 }), 0, 1.6, -D / 2));
+      root.add(at(Objects.sideboard(M, { w: 2.4, h: 0.62, mat: M.blackOak }), 0, 0, -D / 2 + 0.25));
+      root.add(at(Objects.vase(M, { h: 0.32, r: 0.09, variant: 0, mat: M.ceramic }), 0.85, 0.62, -D / 2 + 0.25));
+      root.add(at(Objects.meetingTable(M, { w: 3.4, d: 1.2 }), 0, 0, 0.2, Math.PI / 2));
+      [-0.9, 0.2, 1.3].forEach((z) => {
+        root.add(at(Objects.diningChair(M, { frame: M.blackOak, seat: M.blackOak }), -0.95, 0, z, Math.PI / 2));
+        root.add(at(Objects.diningChair(M, { frame: M.blackOak, seat: M.blackOak }), 0.95, 0, z, -Math.PI / 2));
+      });
+      root.add(at(Objects.linearPendant(M, { len: 2.6, drop: 1.15 }), 0, H, 0.2, Math.PI / 2));
+      root.add(at(Objects.laptop(M), -0.25, 0.77, -0.6, Math.PI / 2));
+      root.add(at(Objects.books(M, { count: 2, seed: 44 }), 0.3, 0.77, 0.9, 0.3));
+      root.add(at(Objects.plant(M, { height: 1.9, spread: 0.7, seed: 91, leaves: 1100 }), 2.8, 0, -2.3));
+      [-2.0, 2.0].forEach((z) => root.add(at(Objects.lightLine(M, { len: 2.4 }), 0.8, H, z)));
+
+      return {
+        root,
+        lighting: light,
+        cameras: {
+          portrait: { pos: [2.4, 1.45, 2.85], target: [-1.6, 1.0, -1.4], fov: 54, shift: 0.06 },
+          detail: { pos: [2.3, 1.25, 2.6], target: [0.0, 0.6, 0.0], fov: 44 },
+          screen: { pos: [0.15, 1.5, 2.95], target: [0, 1.25, -3.0], fov: 52, shift: 0.08 },
+        },
+      };
+    },
+
+    // Creative studio: exposed ceiling and ducts, a paper backdrop with
+    // softboxes, an acoustic panel wall and a big worktable.
+    studio(M, o = {}) {
+      const W = 12, D = 9, H = 3.8;
+      const root = new THREE.Group();
+      root.add(roomShell(M, {
+        w: W, d: D, h: H, frontWall: !!o.frontWall, mullion: 0.8, ceilingMat: M.ceilingDark,
+        openings: { back: [{ x0: 6.6, x1: 11.6, y0: 0.9, y1: 3.4 }], right: [{ x0: 1.0, x1: 7.4, y0: 0.9, y1: 3.4 }] },
+      }));
+      const light = Object.assign({}, OFFICE_DAY, { sun: [10, 11, -12] });
+      if (!o.noExterior) root.add(cityscape(M, { seed: 151, y: -18, sun: light.sun }));
+
+      // Photography corner.
+      root.add(at(Objects.backdrop(M, { w: 3.4, h: 3.1, depth: 1.5, r: 0.6 }), -3.2, 0, -D / 2 + 0.35));
+      root.add(at(Objects.softbox(M), -5.0, 0, -2.3, 2.07));
+      root.add(at(Objects.softbox(M), -1.4, 0, -2.3, -2.07));
+      root.add(at(Objects.stool(M, { h: 0.7 }), -3.2, 0, -3.2));
+      root.add(at(Objects.cameraRig(M), -3.2, 0, -0.7, Math.PI));
+
+      // Acoustic wall.
+      root.add(at(Objects.acousticPanels(M, { cols: 8, rows: 4, size: 0.62, seed: 5 }), -W / 2, 0.45, 1.0, Math.PI / 2));
+
+      // Worktable under dome pendants.
+      root.add(at(Objects.meetingTable(M, { w: 3.2, d: 1.2, top: M.oak, legs: M.blackSteel }), 2.6, 0, 0.9));
+      [[1.6, 0.2, 0], [2.6, 0.2, 0], [3.6, 0.2, 0], [1.6, 1.6, Math.PI], [2.6, 1.6, Math.PI], [3.6, 1.6, Math.PI]].forEach(([x, z, ry], i) => root.add(at(Objects.taskChair(M, { seat: i % 3 === 1 ? M.fabricAccent : M.fabricDark }), x, 0, z, ry)));
+      root.add(at(Objects.laptop(M), 2.2, 0.77, 0.75));
+      root.add(at(Objects.laptop(M), 3.3, 0.77, 1.05, Math.PI));
+      root.add(at(Objects.books(M, { count: 3, seed: 51 }), 2.8, 0.77, 0.9, 0.4));
+      [1.5, 2.6, 3.7].forEach((x) => root.add(at(Objects.pendant(M, { drop: 1.75, kind: 'dome', r: 0.26, mat: M.blackSteel }), x, H, 0.9)));
+
+      root.add(at(Objects.metalShelf(M, { w: 1.8, h: 2.2, seed: 6 }), 5.5, 0, 3.5, -Math.PI / 2));
+      root.add(at(Objects.bigLeafPlant(M, { height: 1.7, seed: 21 }), 5.1, 0, -3.7));
+      root.add(at(Objects.plant(M, { height: 1.9, spread: 0.7, seed: 99, leaves: 1000 }), -5.3, 0, 3.9));
+      [-1.4, 2.2].forEach((z) => root.add(at(Objects.duct(M, { len: 11, r: 0.3 }), 0, H - 0.45, z)));
+
+      return {
+        root,
+        lighting: light,
+        cameras: {
+          portrait: { pos: [0.6, 1.5, 3.9], target: [-3.2, 1.3, -3.4], fov: 54, shift: 0.08 },
+          detail: { pos: [0.6, 1.45, 2.8], target: [2.6, 0.9, 0.9], fov: 50, shift: 0.04 },
+          wide: { pos: [5.5, 1.6, 1.0], target: [-2.6, 1.55, -1.4], fov: 64, shift: 0.1 },
+          main: { pos: [5.0, 1.55, 4.2], target: [-3.0, 1.4, -2.8], fov: 60, shift: 0.08 },
         },
       };
     },
@@ -1749,6 +2574,7 @@
     Objects,
     roomShell,
     exterior,
+    cityscape,
     createRoom,
     Rooms,
     applyCamera,

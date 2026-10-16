@@ -1386,6 +1386,16 @@ html:not(.js) .services__progress {
 .why__head .display { grid-column: 1 / span 7; }
 .projects__intro { grid-column: 9 / span 4; color: var(--text-muted); }
 
+.projects__note {
+  display: block;
+  margin-top: 0.6rem;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange-deep);
+}
+
 .projects__grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));

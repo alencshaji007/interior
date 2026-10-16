@@ -4,6 +4,8 @@ The website for **Wellfit Designs** (WELL FIT SPACE DECORATION DESIGN & IMPLEMEN
 
 It is a six-page static site: Home, About Us, Services, Projects, Our Process and Contact. The home page has a real-time Three.js living room in the hero. The site also uses GSAP scroll choreography, a depth-parallax design-visualisation viewer on the Services page, a project dialog, an enquiry form and a custom cursor.
 
+Every image on the site is a 3D visualisation, path-traced from the same procedural scenes the hero renders live. This includes the offices, reception, meeting room, studio and villas behind each project, so the imagery and the live 3D read as one body of work.
+
 No framework, no backend and no build step are needed to run it.
 
 ## Running locally
@@ -68,6 +70,7 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 - **`room-kit.js`** is the core.
   - It provides procedural textures (oak planks, Calacatta marble, travertine, limewash, bouclé, linen…), a PBR material library and furniture builders.
   - It has five furnished room presets (`living`, `bedroom`, `kitchen`, `dining`, `office`), plus a double-height `villa` and a `materialStudio`.
+  - Five commercial presets back the project imagery: `workspace`, `lounge`, `reception`, `meeting` and `studio`. They use high-floor city views (`cityscape`) and furniture such as bench desks, task chairs, banquettes, glass partitions, acoustic panels and a photo backdrop.
   - It is a classic script, so it runs from `file://`.
 - **`three-scene.js`** builds the `living` preset in real time.
   - Lighting: sun with soft shadows, sky-based image lighting, AgX tone mapping, and ambient occlusion on large screens.
@@ -81,20 +84,30 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 
 ## Imagery
 
-| Images | Source |
+All stills are path-traced design visualisations (see *Regenerating the visualisations* below). `og-image-1200.jpg` is the hero poster composed with the logo.
+
+Each project has its own scene built to its brief:
+
+| Project | Scene (`room-kit.js`) |
 | --- | --- |
-| `project-*` (except `project-atelier`), `intro-office`, `svc-design`, `svc-commercial`, `services-hero`, `process-hero`, `serve-*`, `about-band` | Photographs from the Wellfit Designs company profile |
-| `hero-living`, `room-*`, `service-*`, `project-atelier`, `material-stone`, `cta-dusk` | Path-traced design visualisations (see below) |
-| `og-image-1200.jpg` | The hero poster composed with the logo |
+| Oriana Trading & Sons | `workspace`: bench desks with terracotta planter troughs, oak library wall, city views |
+| INVA Investors | `lounge`: terracotta arched alcoves with banquettes, lounge by the glazing |
+| Smart Leave | `reception`: stone-fronted counter, backlit feature wall, glass meeting room |
+| HOC Creative | `studio`: paper backdrop and softboxes, acoustic panel wall, exposed ducts |
+| Strada | `meeting`: oak slat wall, herringbone floor, black table and chairs |
+| Avery Davis Home | `living` with the `minimal` palette |
+| Richard Sanchez | `villa` hall with the `stone` palette |
+
+The project pages say the images are 3D design visualisations. When approved project photography is available, replace the files (keeping names and aspect ratios) and remove that note.
 
 Each image exists as `assets/images/<name>-<width>.{webp,jpg}`, usually in two widths. To replace one, keep the name and aspect ratio:
 
 | Aspect | Images |
 | --- | --- |
 | 16:9 | `hero-living` (960/1920), `cta-dusk` (800/1600), `about-band` (1000/1920) |
-| 16:10 | `room-*` (800/1600), `project-avery` (800/1360), `project-sanchez` (800/1460) |
-| 4:5 | commercial `project-*` (600/1100), `service-*`, `project-atelier` (600/1000), `intro-office`, `svc-*`, `services-hero`, `process-hero` |
-| 1:1 | `project-*-detail`, `serve-*`, `material-stone` |
+| 16:10 | `room-*`, `project-avery`, `project-sanchez` (800/1600) |
+| 4:5 | commercial `project-*`, `service-*`, `project-atelier`, `intro-dining`, `about-lounge`, `svc-*`, `services-hero`, `process-hero` (600/1000) |
+| 1:1 | `project-*-detail` (700), `serve-*` (600/900), `material-stone` (600/1100) |
 | 1200×630 | `og-image-1200.jpg` |
 
 The room viewer also reads `room-<name>-depth.png`, a grayscale depth map where near is white and far is black. If you replace a room image, either supply a matching depth map or delete `room-<name>-depth.png`. The viewer then falls back to a plain crossfade.
@@ -113,7 +126,9 @@ npm run render -- --python "$(which python)" service-   # stills whose name matc
 node pipeline.mjs --preview room-living --python "$(which python)"   # quick low-res preview
 ```
 
-`jobs.mjs` lists every rendered image: which room, camera, palette and lighting it uses.
+`jobs.mjs` lists every rendered image: which room, camera, palette and lighting it uses. The commercial scenes use a few offline-only textures (herringbone oak, carpet tiles, tower facades for the city views); they live in `EXTRA_TEXTURES`, so the live site never generates or requests them.
+
+The pipeline was last run with `bpy` 5.0 on Python 3.11. `--samples 24 --preview` gives a quick low-resolution check before a full render.
 
 `npm run build:vendor` rebuilds `assets/vendor/three.bundle.min.js`. It bundles Three.js r186 with RoundedBoxGeometry, BufferGeometryUtils and the GTAO post-processing passes, as a classic script exposing `window.THREE`.
 
@@ -134,7 +149,7 @@ All four exit with a non-zero status on failure.
 ## Before launch
 
 - **Enquiry form**: it validates and shows a confirmation, but there is no backend, so enquiries are not sent anywhere yet. Connect it to a form service or endpoint.
-- **Project photographs**: the content document asks for approved project photographs and verified descriptions before publication. The project images come from the company profile; confirm each one against the completed scope.
+- **Project photographs**: the content document asks for approved project photographs and verified descriptions before publication. The project images are currently 3D visualisations (noted on the pages); swap in approved photography when available.
 - **Domain**: canonical and Open Graph URLs assume `https://www.wellfitdesigns.com/`.
 
 ## Accessibility & performance
@@ -159,4 +174,4 @@ All four exit with a non-zero status on failure.
 
 - [Three.js](https://threejs.org) (MIT) and [GSAP](https://gsap.com) with ScrollTrigger (GSAP standard licence, free for this use).
 - Fonts: [DM Serif Display](https://github.com/googlefonts/dm-fonts) and [Jost](https://github.com/indestructible-type/Jost), both under the SIL Open Font License.
-- Project photography and the logo belong to Wellfit Designs. Visualisations, textures and 3D content were generated procedurally for this project.
+- The logo belongs to Wellfit Designs. Visualisations, textures and 3D content were generated procedurally for this project.

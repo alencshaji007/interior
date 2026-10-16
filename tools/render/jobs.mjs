@@ -8,6 +8,9 @@ const SIZES = {
   wide: [1600, 900, [1600, 800]],
   [P]: [1000, 1250, [1000, 600]],
   square: [1100, 1100, [1100, 600]],
+  sq: [900, 900, [900, 600]],
+  detail: [700, 700, [700]],
+  band: [1920, 1080, [1920, 1000]],
   og: [1200, 630, [1200]],
 };
 
@@ -18,6 +21,13 @@ const PALETTES = {
   atelier: { wall: '#e6e3de', floor: 'concrete', fabric2: '#9d9488', accent: '#4a3f36', wood: '#cdb59b', darkWood: '#4e4038' },
   coastal: { wall: '#f1eee9', floor: 'oak', floorTint: '#f2eadf', fabric: '#f3f0ea', fabric2: '#d9d6cf', rug: '#e8e4dc', outside: '#d8d6cc' },
   stone: { wall: '#ddd5ca', floor: 'stone', fabric2: '#a39584', accent: '#5b4637', darkWood: '#54463c' },
+  minimal: { wall: '#f4f2ee', floorTint: '#f3ece2', fabric: '#f1eee8', fabric2: '#d8d2c8', accent: '#9a8a78', rug: '#e9e4dc', darkWood: '#8a7766' },
+  // Commercial interiors.
+  office: { floor: 'carpet', floorTint: '#b9bbbc', wall: '#f3f1ed' },
+  lounge: { floorTint: '#f6efe6', wall: '#f3efe9' },
+  reception: { floorTint: '#efe4d6', wall: '#f2eee8' },
+  meeting: { floor: 'herringbone', wall: '#efebe5' },
+  studio: { floor: 'polished', floorTint: '#d9d4cc', wall: '#e9e6e1' },
 };
 
 export const JOBS = [
@@ -45,6 +55,36 @@ export const JOBS = [
 
   // Approvals & project management (desk study).
   { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
+
+  // Projects: one commercial scene per client brief, plus the two villas.
+  { name: 'project-oriana', room: 'workspace', camera: 'portrait', size: P, samples: 128, palette: 'office' },
+  { name: 'project-oriana-detail', room: 'workspace', camera: 'detail', size: 'detail', samples: 128, palette: 'office' },
+  { name: 'project-inva', room: 'lounge', camera: 'portrait', size: P, samples: 128, palette: 'lounge' },
+  { name: 'project-inva-detail', room: 'lounge', camera: 'detail', size: 'detail', samples: 128, palette: 'lounge' },
+  { name: 'project-smartleave', room: 'reception', camera: 'portrait', size: P, samples: 128, palette: 'reception' },
+  { name: 'project-smartleave-detail', room: 'reception', camera: 'meeting', size: 'detail', samples: 128, palette: 'reception' },
+  { name: 'project-hoc', room: 'studio', camera: 'portrait', size: P, samples: 128, palette: 'studio' },
+  { name: 'project-hoc-detail', room: 'studio', camera: 'detail', size: 'detail', samples: 128, palette: 'studio' },
+  { name: 'project-strada', room: 'meeting', camera: 'portrait', size: P, samples: 128, palette: 'meeting' },
+  { name: 'project-strada-detail', room: 'meeting', camera: 'detail', size: 'detail', samples: 128, palette: 'meeting' },
+  { name: 'project-avery', room: 'living', camera: 'window', size: L, samples: 128, palette: 'minimal' },
+  { name: 'project-avery-detail', room: 'kitchen', camera: 'detail', size: 'detail', samples: 128, palette: 'minimal' },
+  { name: 'project-sanchez', room: 'villa', camera: 'hall', size: L, samples: 128, palette: 'stone' },
+
+  // Page imagery.
+  { name: 'intro-dining', room: 'dining', camera: 'angle', size: P, samples: 128, palette: 'terra', options: { stoneWalls: false } },
+  { name: 'about-lounge', room: 'lounge', camera: 'lounge', size: P, samples: 128, palette: 'lounge' },
+  { name: 'about-band', room: 'workspace', camera: 'main', size: 'band', samples: 128, palette: 'office' },
+  { name: 'services-hero', room: 'reception', camera: 'wait', size: P, samples: 128, palette: 'reception' },
+  { name: 'process-hero', room: 'meeting', camera: 'screen', size: P, samples: 128, palette: 'meeting' },
+  { name: 'svc-design', room: 'workspace', camera: 'plan', size: P, samples: 128, palette: 'office', options: { noCeiling: true, noExterior: true } },
+  { name: 'svc-commercial', room: 'workspace', camera: 'aisle', size: P, samples: 128, palette: 'office' },
+
+  // Who we serve.
+  { name: 'serve-offices', room: 'reception', camera: 'main', size: 'sq', samples: 128, palette: 'reception' },
+  { name: 'serve-villas', room: 'villa', camera: 'window', size: 'sq', samples: 128, palette: 'glass' },
+  { name: 'serve-apartments', room: 'bedroom', camera: 'side', size: 'sq', samples: 128, palette: 'coastal', options: { city: true } },
+  { name: 'serve-commercial', room: 'studio', camera: 'wide', size: 'sq', samples: 128, palette: 'studio' },
 
   // Finishing-works close-up.
   ...['stone'].map((m) => ({
