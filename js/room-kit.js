@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FORMA — Procedural Interior Kit
+   Wellfit Designs — Procedural Interior Kit
    --------------------------------------------------------------------------
    A small library of architectural primitives, procedural materials and
    furnished room presets built with Three.js.

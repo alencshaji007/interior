@@ -21,9 +21,9 @@ const PALETTES = {
 };
 
 export const JOBS = [
-  // Hero poster (fallback when WebGL/motion is unavailable) + social card.
+  // Hero poster (fallback when WebGL/motion is unavailable). The social
+  // card (og-image-1200.jpg) is composed from this poster and the logo.
   { name: 'hero-living', room: 'living', camera: 'hero', size: 'hero', samples: 128 },
-  { name: 'og-image', room: 'living', camera: 'wide', size: 'og', samples: 128, formats: ['jpg'] },
 
   // Room showcase (with depth maps for the 3D parallax viewer).
   { name: 'room-living', room: 'living', camera: 'wide', size: L, samples: 128, depth: true },
@@ -33,30 +33,21 @@ export const JOBS = [
   { name: 'room-office', room: 'office', camera: 'main', size: L, samples: 128, depth: true },
 
   // Editorial / section imagery.
-  { name: 'intro-stair', room: 'villa', camera: 'stair', size: P, samples: 128, palette: 'glass' },
-  { name: 'about-studio', room: 'office', camera: 'shelves', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
   { name: 'cta-dusk', room: 'living', camera: 'window', size: 'wide', samples: 160,
     lighting: { sun: [-8, 1.2, -12], sunColor: '#ff9b5e', sunIntensity: 1.2, skyTop: '#39465a', skyBottom: '#d99c73', ground: '#4a443e', envIntensity: 0.55, lampIntensity: 12, lampSoftIntensity: 5, exposure: 1.25 } },
 
   // Services.
   { name: 'service-residential', room: 'living', camera: 'lounge', size: P, samples: 128 },
   { name: 'service-villa', room: 'villa', camera: 'main', size: P, samples: 128, palette: 'glass' },
-  { name: 'service-apartment', room: 'bedroom', camera: 'side', size: P, samples: 128, palette: 'coastal' },
-  { name: 'service-furniture', room: 'living', camera: 'chair', size: P, samples: 128 },
   { name: 'service-lighting', room: 'dining', camera: 'pendant', size: P, samples: 128,
     lighting: { skyTop: '#5d6a7c', skyBottom: '#e3b18b', sun: [-6, 1.5, -12], sunColor: '#ffae78', sunIntensity: 1.4, envIntensity: 0.6, lampIntensity: 10, exposure: 1.2 } },
   { name: 'service-turnkey', room: 'kitchen', camera: 'front', size: P, samples: 128 },
 
-  // Selected projects.
-  { name: 'project-oak', room: 'living', camera: 'hero', size: L, samples: 128 },
-  { name: 'project-terra', room: 'dining', camera: 'angle', size: P, samples: 128, palette: 'terra', options: { stoneWalls: false } },
-  { name: 'project-glass', room: 'villa', camera: 'window', size: L, samples: 128, palette: 'glass' },
+  // Approvals & project management (desk study).
   { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
-  { name: 'project-coastal', room: 'bedroom', camera: 'main', size: L, samples: 128, palette: 'coastal', options: { coastal: true } },
-  { name: 'project-stone', room: 'kitchen', camera: 'detail', size: P, samples: 128, palette: 'stone', options: { stoneWalls: true, darkStone: true } },
 
-  // Material palette close-ups.
-  ...['wood', 'stone', 'marble', 'metal', 'glass', 'fabric'].map((m) => ({
+  // Finishing-works close-up.
+  ...['stone'].map((m) => ({
     name: 'material-' + m, room: 'materialStudio', camera: 'main', size: 'square', samples: m === 'glass' ? 256 : 128, options: { material: m, noExterior: true, frontWall: false },
   })),
 ];

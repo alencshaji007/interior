@@ -1,5 +1,5 @@
 /* ==========================================================================
-   FORMA — three-scene.js
+   Wellfit Designs — three-scene.js
    Real-time Three.js scenes:
      • HeroScene  – the furnished living room behind the hero (mouse +
                     scroll driven camera, soft shadows, PBR, subtle life)
@@ -496,7 +496,7 @@
         try {
           list.push(await new Ornament(canvas, canvas.dataset.ornament).init());
         } catch (err) {
-          console.warn('[FORMA] ornament skipped:', err);
+          console.warn('[Wellfit] ornament skipped:', err);
         }
       }
       return list;

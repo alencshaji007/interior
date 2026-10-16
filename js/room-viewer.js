@@ -1,6 +1,7 @@
 /* ==========================================================================
-   FORMA — room-viewer.js
-   "Explore Our Spaces": an interactive room viewer.
+   Wellfit Designs — room-viewer.js
+   "See How a Space Comes Together": an interactive design-visualisation
+   viewer on the services page.
 
    Each room is a path-traced still plus a depth map rendered from the same
    camera (tools/render). A tiny raw-WebGL shader turns them into a 2.5D
@@ -17,46 +18,37 @@
 
   const FORMA = (window.FORMA = window.FORMA || {});
 
+  // Design visualisations, each framed by the service it illustrates.
   const ROOMS = {
     living: {
       name: 'Living',
-      project: 'The Oak Residence',
-      desc: 'A low, generous living room turned towards the garden. Vertical oak slats warm the long wall while floor-to-ceiling glazing draws the landscape inside.',
-      area: '64 m²',
-      palette: 'White oak, bouclé, travertine',
-      light: 'West-facing garden glazing',
+      service: 'Residential Interior Design & Fit-Out',
+      desc: 'Personalised interiors for villas and apartments, balancing comfort, aesthetics and everyday practicality.',
+      specs: [['Scope', 'Villa and apartment interiors'], ['Design', 'Living-room design'], ['Finishes', 'Flooring and wall finishes']],
     },
     bedroom: {
       name: 'Bedroom',
-      project: 'Private suite, Kochi',
-      desc: 'A quiet suite wrapped in timber and linen. The bed faces the morning light; everything else steps back.',
-      area: '38 m²',
-      palette: 'Oak slats, washed linen, walnut',
-      light: 'East morning light, sheer curtains',
+      service: 'Residential Interior Design & Fit-Out',
+      desc: 'Your home should reflect your lifestyle while providing comfort, functionality and a sense of belonging.',
+      specs: [['Design', 'Living-room and bedroom design'], ['Joinery', 'Custom wardrobes and storage'], ['Lighting', 'Ceiling and lighting coordination']],
     },
     kitchen: {
       name: 'Kitchen',
-      project: 'The Oak Residence',
-      desc: 'A kitchen built like furniture: full-height oak joinery, a waterfall marble island and a single uninterrupted worktop.',
-      area: '46 m²',
-      palette: 'Oak, Calacatta marble, bronze',
-      light: 'Garden glazing and globe pendants',
+      service: 'Custom Joinery & Carpentry',
+      desc: 'Bespoke cabinetry, built-in storage, feature panels and custom furniture, supported by our joinery production facility in Ajman.',
+      specs: [['Joinery', 'Wardrobes and kitchen cabinetry'], ['Furniture', 'Bespoke furniture and built-in units'], ['Produced', 'Ajman joinery facility']],
     },
     dining: {
       name: 'Dining',
-      project: 'Casa Terra',
-      desc: 'A table for long evenings — solid oak beneath a linear bronze pendant, framed by a wall of glass onto the garden.',
-      area: '42 m²',
-      palette: 'Oak, linen, clay ceramics',
-      light: 'North garden wall, linear pendant',
+      service: 'Ceiling, Partition & Finishing Works',
+      desc: 'Finishes define the character of an interior. We coordinate the ceiling, partition and finishing works so that they complement the wider design.',
+      specs: [['Ceilings', 'Suspended and decorative ceilings'], ['Walls', 'Feature walls and cladding'], ['Lighting', 'Integrated lighting coordination']],
     },
     office: {
-      name: 'Office',
-      project: 'Urban Atelier',
-      desc: 'A library-study with a full-height walnut bookcase, a desk that faces the trees and a reading chair for slower hours.',
-      area: '30 m²',
-      palette: 'Walnut, leather, lime plaster',
-      light: 'Diffuse north light',
+      name: 'Study',
+      service: 'Interior Design & Space Planning',
+      desc: 'Every successful interior begins with a clear understanding of how a space should look, feel and function.',
+      specs: [['Planning', 'Space planning and layout development'], ['Materials', 'Material and finish selection'], ['Joinery', 'Furniture and joinery coordination']],
     },
   };
   const ORDER = Object.keys(ROOMS);
@@ -247,7 +239,7 @@
         try {
           this.renderer = new DepthRenderer(this.canvas);
         } catch (err) {
-          console.warn('[FORMA] room viewer: WebGL fallback', err);
+          console.warn('[Wellfit] room viewer: WebGL fallback', err);
           return;
         }
         this.onPointerMove = (e) => {
@@ -362,11 +354,18 @@
         window.setTimeout(() => {
           p.querySelector('[data-room-index]').textContent = String(index + 1).padStart(2, '0');
           p.querySelector('[data-room-name]').textContent = data.name;
-          p.querySelector('[data-room-project]').textContent = data.project;
+          p.querySelector('[data-room-project]').textContent = data.service;
           p.querySelector('[data-room-desc]').textContent = data.desc;
-          p.querySelector('[data-room-area]').textContent = data.area;
-          p.querySelector('[data-room-palette]').textContent = data.palette;
-          p.querySelector('[data-room-light]').textContent = data.light;
+          const specs = p.querySelector('[data-room-specs]');
+          specs.replaceChildren(...data.specs.map(([label, value]) => {
+            const row = document.createElement('div');
+            const dt = document.createElement('dt');
+            const dd = document.createElement('dd');
+            dt.textContent = label;
+            dd.textContent = value;
+            row.append(dt, dd);
+            return row;
+          }));
           p.classList.remove('is-changing');
         }, this.env.reducedMotion ? 0 : 320);
       },

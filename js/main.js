@@ -1,12 +1,12 @@
 /* ==========================================================================
-   FORMA — main.js
+   Wellfit Designs — main.js
    Initialisation and UI:
      • environment / capability detection
      • boot sequence (loader → intro → on-demand 3D)
      • header, mobile menu, active navigation
      • custom cursor and magnetic buttons
-     • material card tilt, project dialog, testimonial carousel
-     • contact form validation and success state
+     • card tilt, project dialog
+     • enquiry form validation and success state
    ========================================================================== */
 (function () {
   'use strict';
@@ -92,8 +92,10 @@
     header.addEventListener('focusin', () => header.classList.remove('is-hidden'));
     update();
 
-    // Highlight the nav link for the section in view.
-    const links = $$('.nav__link');
+    // In-page links (#section) highlight while their section is in view.
+    // Links to other pages are marked with aria-current in the markup.
+    const links = $$('.nav__link').filter((a) => a.getAttribute('href').startsWith('#'));
+    if (!links.length) return;
     const map = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
     const io = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -191,8 +193,8 @@
       const target = e.target instanceof Element ? e.target : null;
       if (!target) return;
       const labelled = target.closest('[data-cursor]');
-      const interactive = target.closest('a, button, label, select, [role="tab"]');
-      const dark = target.closest('.hero, .section--dark, .cta, .footer');
+      const interactive = target.closest('a, button, label, select, summary, [role="tab"]');
+      const dark = target.closest('.hero, .section--dark, .facts, .cta, .footer');
       el.classList.toggle('is-light', !!dark && !labelled);
       if (labelled) {
         label.textContent = labelled.dataset.cursor === 'view' ? 'VIEW' : 'EXPLORE';
@@ -233,13 +235,14 @@
   }
 
   /* ------------------------------------------------------------------------
-     Materials: tilt + moving highlight
+     Cards: tilt + moving highlight
      ------------------------------------------------------------------------ */
 
-  function initMaterials() {
+  function initTilt() {
     if (env.touch || env.reducedMotion) return;
-    $$('[data-material]').forEach((card) => {
-      const media = $('.material__media', card);
+    $$('[data-tilt]').forEach((card) => {
+      const media = $('[data-tilt-media]', card);
+      if (!media) return;
       let frame = 0;
       card.addEventListener('pointermove', (e) => {
         cancelAnimationFrame(frame);
@@ -281,7 +284,7 @@
       img.removeAttribute('data-parallax');
       img.removeAttribute('style');
       img.loading = 'eager';
-      img.sizes = '(min-width: 992px) 60vw, 100vw';
+      img.sizes = '(min-width: 992px) 50vw, 100vw';
       $$('source', picture).forEach((s) => (s.sizes = img.sizes));
       figure.appendChild(picture);
       const body = document.createElement('div');
@@ -309,73 +312,7 @@
   }
 
   /* ------------------------------------------------------------------------
-     Testimonial carousel
-     ------------------------------------------------------------------------ */
-
-  function initCarousel() {
-    const rootEl = $('[data-carousel]');
-    if (!rootEl) return;
-    const slides = $$('[data-slide]', rootEl);
-    const dots = $$('[data-carousel-dots] button', rootEl);
-    const track = $('[data-carousel-track]', rootEl);
-    let index = 0;
-    let timer = 0;
-    let paused = false;
-    let inView = false;
-
-    const hideTimers = new Map();
-
-    const show = (next) => {
-      next = (next + slides.length) % slides.length;
-      if (next === index) return;
-      const current = slides[index];
-      const incoming = slides[next];
-      current.classList.add('is-leaving');
-      hideTimers.set(current, window.setTimeout(() => {
-        hideTimers.delete(current);
-        current.hidden = true;
-        current.classList.remove('is-leaving', 'is-active');
-      }, env.reducedMotion ? 0 : 500));
-      // A slide brought back before its exit finished must not be hidden by
-      // that pending timer.
-      window.clearTimeout(hideTimers.get(incoming));
-      hideTimers.delete(incoming);
-      incoming.classList.remove('is-leaving');
-      incoming.hidden = false;
-      void incoming.offsetWidth;
-      incoming.classList.add('is-active');
-      dots.forEach((d, i) => d.setAttribute('aria-current', i === next ? 'true' : 'false'));
-      index = next;
-    };
-
-    const schedule = () => {
-      window.clearInterval(timer);
-      if (env.reducedMotion) return;
-      timer = window.setInterval(() => { if (inView && !paused && !document.hidden) show(index + 1); }, 7000);
-    };
-
-    $('[data-carousel-prev]', rootEl).addEventListener('click', () => { show(index - 1); schedule(); });
-    $('[data-carousel-next]', rootEl).addEventListener('click', () => { show(index + 1); schedule(); });
-    dots.forEach((d, i) => d.addEventListener('click', () => { show(i); schedule(); }));
-    rootEl.addEventListener('pointerenter', () => (paused = true));
-    rootEl.addEventListener('pointerleave', () => (paused = false));
-    rootEl.addEventListener('focusin', () => { paused = true; track.setAttribute('aria-live', 'polite'); });
-    rootEl.addEventListener('focusout', () => (paused = false));
-    rootEl.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') { show(index + 1); schedule(); }
-      if (e.key === 'ArrowLeft') { show(index - 1); schedule(); }
-    });
-    // Autoplay announces nothing; manual navigation is announced.
-    track.setAttribute('aria-live', 'off');
-    // Only advance while the testimonials are actually on screen.
-    new IntersectionObserver((entries) => {
-      inView = entries[0].isIntersecting;
-      if (inView) schedule();
-    }, { threshold: 0.4 }).observe(rootEl);
-  }
-
-  /* ------------------------------------------------------------------------
-     Contact form — client-side validation only (static site)
+     Enquiry form — client-side validation only (static site)
      ------------------------------------------------------------------------ */
 
   function initForm() {
@@ -383,26 +320,31 @@
     const success = $('[data-form-success]');
     if (!form || !success) return;
 
+    // Checked in document order, so the first invalid field gets focus.
     const rules = {
-      name: (v) => (v.trim().length >= 2 ? '' : 'Please enter your name.'),
-      email: (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Please enter a valid email address.'),
+      name: (v) => (v.trim().length >= 2 ? '' : 'Please enter your full name.'),
       phone: (v) => {
         const digits = v.replace(/\D/g, '');
         if (!v.trim()) return 'Please enter a phone number.';
         return /^[+()\d\s-]+$/.test(v.trim()) && digits.length >= 8 && digits.length <= 15 ? '' : 'Please enter a valid phone number.';
       },
+      email: (v) => (/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()) ? '' : 'Please enter a valid email address.'),
       projectType: (v) => (v ? '' : 'Please choose a project type.'),
-      budget: (v) => (v ? '' : 'Please choose a budget range.'),
-      message: (v) => (v.trim().length >= 10 ? '' : 'Please tell us a little more (at least 10 characters).'),
+      location: (v) => (v.trim().length >= 2 ? '' : 'Please enter the project location.'),
+      message: (v) => (v.trim().length >= 10 ? '' : 'Please describe your project (at least 10 characters).'),
+      contactMethod: (v) => (v ? '' : 'Please choose how we should contact you.'),
     };
 
-    const fieldOf = (name) => (name === 'budget' ? $('.field--chips', form) : form.elements[name].closest('.field'));
+    const controlOf = (name) => {
+      const el = form.elements[name];
+      return el instanceof RadioNodeList ? Array.from(el) : [el];
+    };
+    const fieldOf = (name) => controlOf(name)[0].closest('.field');
     const errorOf = (name) => $('.field__error', fieldOf(name));
-    const controlOf = (name) => (name === 'budget' ? $$('input[name="budget"]', form) : [form.elements[name]]);
 
     const validate = (name) => {
-      const value = name === 'budget' ? (($('input[name="budget"]:checked', form) || {}).value || '') : form.elements[name].value;
-      const message = rules[name](value);
+      // RadioNodeList.value is the checked option's value, or ''.
+      const message = rules[name](form.elements[name].value);
       fieldOf(name).classList.toggle('is-invalid', !!message);
       errorOf(name).textContent = message;
       controlOf(name).forEach((c) => c.setAttribute('aria-invalid', message ? 'true' : 'false'));
@@ -427,7 +369,7 @@
       const button = $('[data-submit]', form);
       button.disabled = true;
       button.classList.add('is-loading');
-      // No backend: simulate a short send, then show the confirmation.
+      // No backend yet: simulate a short send, then show the confirmation.
       window.setTimeout(() => {
         const first = form.elements.name.value.trim().split(/\s+/)[0];
         $('[data-success-name]', success).textContent = first ? ', ' + first : '';
@@ -458,21 +400,27 @@
 
   async function start3D() {
     if (!env.hero3D) return;
+    // Only the home page has the live hero; other pages may only carry
+    // ornaments, and some carry neither.
+    const canvas = $('[data-hero-canvas]');
+    const ornaments = $$('[data-ornament]');
+    if (!canvas && !ornaments.length) return;
     try {
       await loadScript('assets/vendor/three.bundle.min.js');
       await loadScript('js/room-kit.js');
       await loadScript('js/three-scene.js');
       if (!FORMA.Three) throw new Error('three-scene.js did not initialise');
       root.classList.add('has-3d');
-      const canvas = $('[data-hero-canvas]');
-      FORMA.hero = await FORMA.Three.createHero(canvas);
-      $('[data-hero]').classList.add('is-3d');
-      // Sync the camera with the current scroll position.
-      if (FORMA.Animations && FORMA.Animations.ST) FORMA.Animations.ST.refresh();
-      idle(() => FORMA.Three.createOrnaments($$('[data-ornament]')).then((list) => { FORMA.ornaments = list; }));
+      if (canvas) {
+        FORMA.hero = await FORMA.Three.createHero(canvas);
+        $('[data-hero]').classList.add('is-3d');
+        // Sync the camera with the current scroll position.
+        if (FORMA.Animations && FORMA.Animations.ST) FORMA.Animations.ST.refresh();
+      }
+      if (ornaments.length) idle(() => FORMA.Three.createOrnaments(ornaments).then((list) => { FORMA.ornaments = list; }));
     } catch (err) {
       root.classList.remove('has-3d');
-      console.warn('[FORMA] Real-time 3D unavailable, using still imagery.', err);
+      console.warn('[Wellfit] Real-time 3D unavailable, using still imagery.', err);
     }
   }
 
@@ -504,9 +452,8 @@
     initMobileMenu();
     initCursor();
     initMagnetic();
-    initMaterials();
+    initTilt();
     initProjects();
-    initCarousel();
     initForm();
     initSmallThings();
     initImageFallbacks();
@@ -514,10 +461,13 @@
 
     const anim = FORMA.Animations ? FORMA.Animations.init(env) : null;
 
-    // Keep the loader to about a second: wait for fonts (briefly) and a
-    // minimum display time so the wordmark animation can complete.
-    const fonts = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, wait(700)]) : Promise.resolve();
-    await Promise.all([fonts, wait(Math.max(0, (env.reducedMotion ? 150 : 950) - (performance.now() - t0)))]);
+    // Home: keep the loader to about a second — wait for fonts (briefly) and
+    // a minimum display time so the logo animation can complete. Inner pages
+    // have no loader and only wait briefly for fonts.
+    const hasLoader = !!$('[data-loader]');
+    const fonts = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, wait(hasLoader ? 700 : 300)]) : Promise.resolve();
+    const minimum = hasLoader ? (env.reducedMotion ? 150 : 950) : 0;
+    await Promise.all([fonts, wait(Math.max(0, minimum - (performance.now() - t0)))]);
 
     if (anim) await anim.playIntro();
     else {
