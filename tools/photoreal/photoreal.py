@@ -48,14 +48,14 @@ CAMERA = 'Canon EOS R5, 24mm tilt-shift lens, f/8'
 JOBS = [
     # ---- Projects (main + detail) ------------------------------------
     ('project-oriana', 'portrait',
-     'Editorial interior photograph of an open-plan office in a Dubai tower: long white bench desks on slim black legs, '
+     'Editorial interior photograph of an open-plan office on a high floor of a modern tower: long white bench desks on slim black legs, '
      'black mesh task chairs and open laptops, low terracotta planter troughs full of leafy plants running between the desks, '
-     'a full-height oak library shelving wall at the back, floor-to-ceiling windows with soft morning daylight and hazy city towers, '
+     'a full-height oak shelving wall styled with books, binders and ceramics at the back, floor-to-ceiling windows with soft morning daylight and generic modern glass towers in the haze, '
      f'grey carpet tiles, slim linear ceiling lights. Empty and tidy. {CAMERA}.'),
     ('project-oriana-detail', 'square',
      'Close-up interior photograph of a white bench desk in a bright office: an open silver laptop, a notebook and a ceramic cup, '
      'a terracotta planter trough with glossy green plants along the desk edge, floor-to-ceiling glazing behind with soft daylight '
-     'and a blurred Dubai skyline. Shallow depth of field, Sony A7R IV, 50mm, f/2.8, true-to-life textures.'),
+     'and blurred generic glass towers outside. Shallow depth of field, Sony A7R IV, 50mm, f/2.8, true-to-life textures.'),
     ('project-inva', 'portrait',
      'Editorial interior photograph of a corporate breakout lounge: a warm limewashed wall with three tall arched alcoves, each holding '
      'a terracotta velvet banquette, round white marble cafe tables and cream boucle chairs in front, black dome pendants hanging in the '
@@ -69,12 +69,12 @@ JOBS = [
      'oak-panelled feature wall with a single round brushed-brass sculptural disc as its only ornament, warm cove lighting in the ceiling, '
      f'oak plank floor, a tall plant in the corner, calm daylight. Empty and polished. {CAMERA}.'),
     ('project-smartleave-detail', 'square',
-     'Interior photograph of a glass-walled meeting room in a modern Dubai office: black steel-framed glass partitions, a long white '
-     'meeting table with black task chairs, a switched-off black wall-mounted screen, floor-to-ceiling windows with city towers and soft daylight, '
+     'Interior photograph of a glass-walled meeting room in a modern high-rise office: black steel-framed glass partitions, a long white '
+     'meeting table with black task chairs, a switched-off black wall-mounted screen, floor-to-ceiling windows with generic modern glass towers and soft daylight, '
      'oak floor reflecting the light. Empty room. Sony A7R IV, 35mm, f/5.6, true-to-life reflections.'),
     ('project-hoc', 'portrait',
      'Editorial interior photograph of a creative photo studio: a burnt-orange paper backdrop sweeping down onto a polished concrete '
-     'floor, two large softboxes on black light stands, exposed black ducts under a dark painted ceiling, warm plaster walls, daylight '
+     'floor, two large softboxes on black light stands, exposed black ducts under a dark painted ceiling, smooth freshly finished warm plaster walls, daylight '
      f'falling across the floor from a side window. Empty studio. {CAMERA}, realistic textures.'),
     ('project-hoc-detail', 'square',
      'Interior photograph of a studio worktable: a long light oak table with laptops and sketchbooks, black task chairs, three black '
@@ -106,13 +106,13 @@ JOBS = [
      'black pendant above, a low oak sideboard with ceramics, abstract artwork on a warm plaster wall, floor-to-ceiling glazing to a '
      f'garden with olive trees, soft afternoon light and shadows on a wool rug. Empty. {CAMERA}.'),
     ('about-lounge', 'portrait',
-     'Editorial interior photograph of an office lounge in a Dubai tower: cream boucle armchairs and a curved sofa around low round '
+     'Editorial interior photograph of an office lounge on a high floor of a modern tower: cream boucle armchairs and a curved sofa around low round '
      'tables, white globe pendant lights, terracotta planter boxes with small olive trees, light oak plank floor, floor-to-ceiling '
-     f'windows with a bright city view, soft diffused daylight. Empty and serene. {CAMERA}.'),
+     f'windows with a bright view of generic modern glass towers, soft diffused daylight. Empty and serene. {CAMERA}.'),
     ('about-band', 'wide',
-     'Wide editorial interior photograph of a large open-plan office floor in a Dubai tower: rows of white bench desks with black task '
+     'Wide editorial interior photograph of a large open-plan office floor high in a modern tower: rows of white bench desks with black task '
      'chairs and planted troughs, a long oak collaboration table with cream chairs in the foreground, linear ceiling lights, grey '
-     'carpet, floor-to-ceiling glazing with the city skyline in soft morning haze. Empty. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
+     'carpet, floor-to-ceiling glazing with generic modern glass towers in soft morning haze. Empty. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
     ('services-hero', 'portrait',
      'Editorial interior photograph of an office reception waiting area: a linen sofa and a cream boucle armchair around a low oak '
      'coffee table, a framed abstract ochre-and-black artwork on a warm plaster wall, the end of a dark stone reception counter at the '
@@ -127,7 +127,7 @@ JOBS = [
      'natural paper texture. Flat lay, Sony A7R IV, 35mm, f/8, editorial still-life photography.'),
     ('svc-commercial', 'portrait',
      'Editorial interior photograph looking down the aisle of an open-plan office: white bench desks with black task chairs and '
-     'laptops on both sides, terracotta planter troughs with plants between the desks, an oak library shelving wall at the far end, '
+     'laptops on both sides, terracotta planter troughs with plants between the desks, an oak shelving wall styled with books and ceramics at the far end, '
      f'acoustic ceiling rafts and linear lights, grey carpet tiles, daylight from tall windows. Empty. {CAMERA}.'),
     ('serve-offices', 'square',
      'Editorial interior photograph of a modern office reception: a dark stone reception counter in front of warm backlit oak '
@@ -138,9 +138,9 @@ JOBS = [
      'white globe pendants on long cords, floor-to-ceiling glazing opening to a lush garden with trees, pale oak floor, warm '
      'late-afternoon sunlight. Empty and serene. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
     ('serve-apartments', 'square',
-     'Editorial interior photograph of a high-rise apartment bedroom in Dubai: a low bed with crisp linen, a vertical oak slat '
+     'Editorial interior photograph of a high-rise apartment bedroom: a low bed with crisp linen, a vertical oak slat '
      'headboard wall, a leather bench at the foot, a boucle lounge chair and a potted olive tree, floor-to-ceiling window with a view '
-     f'of glass skyscrapers, soft morning light. Empty. {CAMERA}.'),
+     f'of generic modern glass towers, soft morning light. Empty. {CAMERA}.'),
     ('serve-commercial', 'square',
      'Editorial interior photograph of a creative studio office: exposed black ducts on a dark ceiling with large black dome pendant '
      'lights, a long light oak worktable with laptops and black task chairs, a grey acoustic felt panel wall, an orange paper photo '
@@ -238,7 +238,7 @@ def generate(args):
             started = time.time()
             try:
                 result = client.predict(prompt=prompt, seed=seed, randomize_seed=False, width=width, height=height,
-                                        guidance_scale=GUIDANCE, num_inference_steps=STEPS, api_name=endpoint)
+                                        guidance_scale=GUIDANCE, num_inference_steps=args.steps, api_name=endpoint)
             except Exception as e:
                 message = str(e)
                 if 'quota' in message.lower():
@@ -247,7 +247,7 @@ def generate(args):
                 continue
             Image.open(image_path(result)).convert('RGB').save(dest)
             meta = {'space': args.space, 'prompt': prompt, 'seed': seed, 'width': width, 'height': height,
-                    'steps': STEPS, 'guidance': GUIDANCE}
+                    'steps': args.steps, 'guidance': GUIDANCE}
             dest.with_suffix('.json').write_text(json.dumps(meta, indent=2) + '\n')
             print(f'{name} #{variant}: {width}x{height} seed {seed} ({time.time() - started:.0f}s)')
 
@@ -339,6 +339,7 @@ def main():
     g.add_argument('--variants', type=int, default=1, help='seeds per job (default 1)')
     g.add_argument('--force', action='store_true', help='regenerate images that already exist')
     g.add_argument('--space', default=SPACE)
+    g.add_argument('--steps', type=int, default=STEPS)
     for name, fn in (('publish', publish), ('sheet', sheet)):
         p = sub.add_parser(name, help=f'{name} the picked images')
         p.add_argument('--only', help='comma-separated job names')

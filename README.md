@@ -84,21 +84,20 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 
 ## Imagery
 
-All stills are path-traced design visualisations (see *Regenerating the visualisations* below). `og-image-1200.jpg` is the hero poster composed with the logo.
+The seven main project images (`project-oriana`, `-inva`, `-smartleave`, `-hoc`, `-strada`, `-avery`, `-sanchez`) are photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below). The other stills are path-traced design visualisations (see *Regenerating the visualisations*), and `tools/photoreal` has prompts ready to replace them too. The live 3D hero poster and the room viewer images stay 3D. `og-image-1200.jpg` is the hero poster composed with the logo.
 
-Each project has its own scene built to its brief:
+The project close-ups are rendered from a scene built to each brief:
 
-| Project | Scene (`room-kit.js`) |
+| Project | Close-up scene (`room-kit.js`) |
 | --- | --- |
 | Oriana Trading & Sons | `workspace`: bench desks with terracotta planter troughs, oak library wall, city views |
 | INVA Investors | `lounge`: terracotta arched alcoves with banquettes, lounge by the glazing |
 | Smart Leave | `reception`: stone-fronted counter, backlit feature wall, glass meeting room |
 | HOC Creative | `studio`: paper backdrop and softboxes, acoustic panel wall, exposed ducts |
 | Strada | `meeting`: oak slat wall, herringbone floor, black table and chairs |
-| Avery Davis Home | `living` with the `minimal` palette |
-| Richard Sanchez | `villa` hall with the `stone` palette |
+| Avery Davis Home | `kitchen` with the `minimal` palette |
 
-When approved project photography is available, it can replace these renders.
+When approved project photography is available, it can replace these images.
 
 Each image exists as `assets/images/<name>-<width>.{webp,jpg}`, usually in two widths. To replace one, keep the name and aspect ratio:
 
@@ -191,3 +190,4 @@ All four exit with a non-zero status on failure.
 - [Three.js](https://threejs.org) (MIT) and [GSAP](https://gsap.com) with ScrollTrigger (GSAP standard licence, free for this use).
 - Fonts: [DM Serif Display](https://github.com/googlefonts/dm-fonts) and [Jost](https://github.com/indestructible-type/Jost), both under the SIL Open Font License.
 - The logo belongs to Wellfit Designs. Visualisations, textures and 3D content were generated procedurally for this project.
+- Photorealistic stills were generated with [FLUX.1 Krea [dev]](https://huggingface.co/black-forest-labs/FLUX.1-Krea-dev); its model card permits commercial use of generated outputs.

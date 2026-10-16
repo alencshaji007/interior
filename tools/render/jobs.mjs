@@ -56,20 +56,13 @@ export const JOBS = [
   // Approvals & project management (desk study).
   { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
 
-  // Projects: one commercial scene per client brief, plus the two villas.
-  { name: 'project-oriana', room: 'workspace', camera: 'portrait', size: P, samples: 128, palette: 'office' },
+  // Project close-ups. The main project images are photorealistic stills from tools/photoreal.
   { name: 'project-oriana-detail', room: 'workspace', camera: 'detail', size: 'detail', samples: 128, palette: 'office' },
-  { name: 'project-inva', room: 'lounge', camera: 'portrait', size: P, samples: 128, palette: 'lounge' },
   { name: 'project-inva-detail', room: 'lounge', camera: 'detail', size: 'detail', samples: 128, palette: 'lounge' },
-  { name: 'project-smartleave', room: 'reception', camera: 'portrait', size: P, samples: 128, palette: 'reception' },
   { name: 'project-smartleave-detail', room: 'reception', camera: 'meeting', size: 'detail', samples: 128, palette: 'reception' },
-  { name: 'project-hoc', room: 'studio', camera: 'portrait', size: P, samples: 128, palette: 'studio' },
   { name: 'project-hoc-detail', room: 'studio', camera: 'detail', size: 'detail', samples: 128, palette: 'studio' },
-  { name: 'project-strada', room: 'meeting', camera: 'portrait', size: P, samples: 128, palette: 'meeting' },
   { name: 'project-strada-detail', room: 'meeting', camera: 'detail', size: 'detail', samples: 128, palette: 'meeting' },
-  { name: 'project-avery', room: 'living', camera: 'window', size: L, samples: 128, palette: 'minimal' },
   { name: 'project-avery-detail', room: 'kitchen', camera: 'detail', size: 'detail', samples: 128, palette: 'minimal' },
-  { name: 'project-sanchez', room: 'villa', camera: 'hall', size: L, samples: 128, palette: 'stone' },
 
   // Page imagery.
   { name: 'intro-dining', room: 'dining', camera: 'angle', size: P, samples: 128, palette: 'terra', options: { stoneWalls: false } },
