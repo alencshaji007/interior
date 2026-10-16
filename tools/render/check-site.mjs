@@ -25,7 +25,6 @@ for (const w of widths.length ? widths : [1440]) {
     await page.waitForTimeout(path === 'index.html' ? 6000 : 3000);
     const state = await page.evaluate(() => ({
       classes: document.documentElement.className,
-      hero3d: !!document.querySelector('[data-hero].is-3d'),
       loader: !!document.querySelector('[data-loader]'),
       overflowX: document.documentElement.scrollWidth - innerWidth,
     }));

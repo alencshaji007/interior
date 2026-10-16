@@ -1,14 +1,15 @@
 """Photorealistic stills for the site, generated with FLUX.1 Krea [dev] on Hugging Face.
 
-The live 3D hero and the room viewer stay 3D; every other still on the site
-comes from here. Each job writes the same file names and pixel sizes that the
-pages already reference, so publishing needs no HTML changes.
+Every still on the site comes from here, including the home hero and the
+room photos on the services page. Each job writes the same file names and
+pixel sizes that the pages already reference, so publishing needs no HTML
+changes. Publishing the hero also rebuilds the Open Graph card.
 
   pip install -r requirements.txt
   export HF_TOKEN=...            # your Hugging Face token (uses your Spaces GPU quota)
 
   python photoreal.py generate                  # every job, skipping ones already generated
-  python photoreal.py generate --only project-hoc,cta-dusk --variants 3
+  python photoreal.py generate --only hero-living,cta-dusk --variants 3   # in this order
   python photoreal.py sheet                     # out/sheet.jpg: the picked image for each job
   python photoreal.py publish                   # write assets/images/<name>-<width>.{jpg,webp}
   python photoreal.py publish --pick project-hoc=2
@@ -174,6 +175,32 @@ JOBS = [
      'Studio still-life photograph of honed travertine wall finish samples: rectangular beige travertine slabs leaning against a pale '
      'plaster wall on a stone plinth, a smooth travertine sphere and a small white ceramic vase beside them, soft directional '
      'daylight with gentle shadows, visible natural pores and veining. Hasselblad X2D, 90mm macro, f/8, minimal warm neutral palette.'),
+    # ---- Home hero (text sits on the left) and the services room photos
+    ('hero-living', 'wide',
+     'Wide editorial interior photograph of a sunlit villa living room: a vertical oak slat feature wall, a low cream boucle sofa with '
+     'linen cushions, a cognac leather lounge chair, a round travertine coffee table on a wool rug, floor-to-ceiling steel-framed glazing '
+     'onto a garden with olive trees, a white globe pendant, warm late-afternoon sunlight raking across a pale oak floor. Calm open '
+     f'space on the left of the frame. Empty. {CAMERA}.'),
+    ('room-living', 'landscape',
+     'Editorial interior photograph of a villa living room: a cream boucle sofa facing a vertical oak slat wall with a low oak media '
+     'console, a round travertine coffee table, a wool rug, floor-to-ceiling glazing onto a green garden, soft afternoon daylight, '
+     f'pale oak floor. Empty and calm. {CAMERA}.'),
+    ('room-bedroom', 'landscape',
+     'Editorial interior photograph of a villa master bedroom: a full-width warm oak timber-panelled headboard wall, a low bed dressed '
+     'in crisp oatmeal linen, slim oak bedside tables with ceramic lamps, sheer linen curtains softening a tall window, a wool rug on '
+     f'a pale oak floor, gentle morning light. Empty and serene. {CAMERA}.'),
+    ('room-kitchen', 'landscape',
+     'Editorial interior photograph of a villa kitchen: full-height pale oak joinery cabinetry, a book-matched white Calacatta marble '
+     'splashback with a slim floating shelf, a large island with a marble worktop and oak stools, white globe pendants, soft daylight '
+     f'from a garden window, oak floor. Empty and pristine. {CAMERA}.'),
+    ('room-dining', 'landscape',
+     'Editorial interior photograph of a villa dining room: a long solid oak dining table with linen upholstered chairs, a slim linear '
+     'black pendant light above, a limewashed plaster wall with a single abstract artwork, a low oak sideboard with ceramics, tall '
+     f'glazing to a garden, soft evening light. Empty. {CAMERA}.'),
+    ('room-office', 'landscape',
+     'Editorial interior photograph of a home study: a full-height walnut bookcase wall styled with linen-bound books and ceramics, a '
+     'walnut desk facing a large window onto a garden, a leather task chair, a boucle reading chair with a floor lamp in the corner, '
+     f'a wool rug on an oak floor, soft daylight. Empty. {CAMERA}.'),
 ]
 SEEDS = {name: 7000 + i * 17 for i, (name, _, _) in enumerate(JOBS)}
 
@@ -185,11 +212,14 @@ ALT = {
 
 
 def selected(names):
-    jobs = [j for j in JOBS if not names or j[0] in names]
-    missing = set(names or ()) - {j[0] for j in jobs}
+    """The named jobs in the order given (so --only sets priority), or all of them."""
+    if not names:
+        return list(JOBS)
+    by_name = {j[0]: j for j in JOBS}
+    missing = [n for n in names if n not in by_name]
     if missing:
-        sys.exit(f'unknown job(s): {", ".join(sorted(missing))}')
-    return jobs
+        sys.exit(f'unknown job(s): {", ".join(missing)}')
+    return [by_name[n] for n in dict.fromkeys(names)]
 
 
 def parse_list(value):
@@ -293,6 +323,19 @@ def publish(args):
         print(f'{name}: ' + ', '.join(t.name for t in targets))
         if name in ALT:
             update_alt(name, ALT[name])
+        if name == 'hero-living':
+            compose_og(img)
+
+
+def compose_og(hero):
+    """og-image-1200.jpg: the logo on a sand panel beside a crop of the hero photo."""
+    card = Image.new('RGB', (1200, 630), (234, 230, 219))
+    card.paste(cover(hero, 720, 630), (480, 0))
+    logo = Image.open(IMAGES / 'logo.png').convert('RGBA')
+    logo = logo.resize((384, round(logo.height * 384 / logo.width)), Image.LANCZOS)
+    card.paste(logo, ((480 - logo.width) // 2, (630 - logo.height) // 2), logo)
+    card.save(IMAGES / 'og-image-1200.jpg', 'JPEG', quality=85, optimize=True, progressive=True)
+    print('  og-image-1200.jpg rebuilt')
 
 
 def update_alt(name, alt):

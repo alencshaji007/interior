@@ -38,13 +38,13 @@
     lowMemory: typeof navigator.deviceMemory === 'number' && navigator.deviceMemory < 4,
     webgl: detectWebGL(),
   });
-  // Real-time 3D only where it is affordable: larger screens, capable
-  // devices, no data-saver and no reduced-motion preference. Everyone else
-  // gets the path-traced poster of the same room.
-  env.hero3D = env.webgl && !env.reducedMotion && !env.saveData && !env.lowMemory &&
+  // The small real-time 3D ornaments run only where they are affordable:
+  // larger screens, capable devices, no data-saver and no reduced-motion
+  // preference. Everyone else simply goes without them.
+  env.live3D = env.webgl && !env.reducedMotion && !env.saveData && !env.lowMemory &&
     window.innerWidth >= 768 && !(env.touch && window.innerWidth < 1024);
-  // ?no3d forces the still-image experience (handy for testing and slow GPUs).
-  if (new URLSearchParams(location.search).has('no3d')) env.hero3D = false;
+  // ?no3d turns them off (handy for testing and slow GPUs).
+  if (new URLSearchParams(location.search).has('no3d')) env.live3D = false;
 
   root.classList.add('js');
   if (env.reducedMotion) root.classList.add('reduced-motion');
@@ -399,25 +399,16 @@
      ------------------------------------------------------------------------ */
 
   async function start3D() {
-    if (!env.hero3D) return;
-    // Only the home page has the live hero; other pages may only carry
-    // ornaments, and some carry neither.
-    const canvas = $('[data-hero-canvas]');
+    if (!env.live3D) return;
     const ornaments = $$('[data-ornament]');
-    if (!canvas && !ornaments.length) return;
+    if (!ornaments.length) return;
     try {
       await loadScript('assets/vendor/three.bundle.min.js');
       await loadScript('js/room-kit.js');
       await loadScript('js/three-scene.js');
       if (!FORMA.Three) throw new Error('three-scene.js did not initialise');
       root.classList.add('has-3d');
-      if (canvas) {
-        FORMA.hero = await FORMA.Three.createHero(canvas);
-        $('[data-hero]').classList.add('is-3d');
-        // Sync the camera with the current scroll position.
-        if (FORMA.Animations && FORMA.Animations.ST) FORMA.Animations.ST.refresh();
-      }
-      if (ornaments.length) idle(() => FORMA.Three.createOrnaments(ornaments).then((list) => { FORMA.ornaments = list; }));
+      idle(() => FORMA.Three.createOrnaments(ornaments).then((list) => { FORMA.ornaments = list; }));
     } catch (err) {
       root.classList.remove('has-3d');
       console.warn('[Wellfit] Real-time 3D unavailable, using still imagery.', err);
@@ -483,7 +474,6 @@
   // Release GPU resources when leaving the page.
   window.addEventListener('pagehide', (e) => {
     if (e.persisted) return; // kept in the back/forward cache — keep scenes alive
-    if (FORMA.hero) FORMA.hero.dispose();
     (FORMA.ornaments || []).forEach((o) => o.dispose());
   });
 })();

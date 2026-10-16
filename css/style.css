@@ -888,8 +888,7 @@ body.menu-open .site-header {
 }
 
 .hero__poster,
-.hero__poster img,
-.hero__canvas {
+.hero__poster img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -901,13 +900,15 @@ body.menu-open .site-header {
   object-position: 45% 50%;
 }
 
-.hero__canvas {
-  opacity: 0;
-  transition: opacity 1.4s var(--ease);
+/* A slow push-in keeps the photo alive; GSAP scales the img itself on scroll. */
+.hero__poster {
+  transform-origin: 60% 45%;
+  animation: hero-drift 28s ease-in-out infinite alternate;
 }
 
-.hero.is-3d .hero__canvas {
-  opacity: 1;
+@keyframes hero-drift {
+  from { transform: scale(1); }
+  to { transform: scale(1.07); }
 }
 
 .hero__shade {
@@ -2046,45 +2047,36 @@ html:not(.js) .services__progress {
   background: #262b33;
 }
 
-.spaces__fallback img,
-.spaces__canvas {
+.spaces__slides picture,
+.spaces__slides img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
 }
 
-.spaces__fallback img {
+.spaces__slides picture {
+  opacity: 0;
+  transition: opacity 1s var(--ease);
+}
+
+.spaces__slides picture.is-active {
+  opacity: 1;
+}
+
+.spaces__slides img {
   object-fit: cover;
-  opacity: 0;
-  transform: scale(1.06);
-  transition: opacity 1s var(--ease), transform 1.6s var(--ease);
+  transform: scale(1.04);
 }
 
-.spaces__fallback img.is-active {
-  opacity: 1;
-  transform: scale(1.02);
+/* The active room drifts slowly so the photo feels alive. */
+.spaces__slides picture.is-active img {
+  animation: room-drift 20s ease-in-out infinite alternate;
 }
 
-.spaces__canvas {
-  opacity: 0;
-  transition: opacity 0.8s var(--ease);
-}
-
-.spaces__frame.is-webgl .spaces__canvas {
-  opacity: 1;
-}
-
-.spaces__hint {
-  position: absolute;
-  left: 1.25rem;
-  bottom: 1.1rem;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.85);
-  pointer-events: none;
+@keyframes room-drift {
+  from { transform: scale(1.02); }
+  to { transform: scale(1.08) translate3d(-1%, 0, 0); }
 }
 
 .spaces__panel {
@@ -2863,7 +2855,6 @@ html:not(.js) .services__progress {
   .form__row { grid-template-columns: 1fr; }
   .footer__top { grid-template-columns: 1fr 1fr; }
   .footer__brand { grid-column: 1 / -1; }
-  .spaces__hint { display: none; }
   .cta__ornament { display: none; }
   .band__media { aspect-ratio: 4 / 3; }
 }
@@ -2914,6 +2905,8 @@ html:not(.js) .services__progress {
   .loader__line span { transform: none; }
   .loader__caption { opacity: 1; }
   .hero__scroll-line::after { display: none; }
+  .hero__poster,
+  .spaces__slides picture.is-active img { animation: none !important; }
   .media [data-parallax],
   .cta__media img { height: 100%; margin-top: 0; }
 }

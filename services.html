@@ -302,13 +302,13 @@
     </section>
 
     <!-- ================================================================
-         DESIGN VISUALISATION — depth-parallax viewer (js/room-viewer.js)
+         ROOMS — tabbed room photos (js/room-viewer.js)
          ================================================================ -->
     <section class="spaces section section--dark" id="spaces" aria-labelledby="spaces-title">
       <div class="container spaces__head">
-        <p class="eyebrow eyebrow--light" data-reveal="up">Design visualisation</p>
+        <p class="eyebrow eyebrow--light" data-reveal="up">Residential interiors</p>
         <h2 class="display display--light" id="spaces-title" data-split>See How a Space Comes Together</h2>
-        <p class="spaces__intro" data-reveal="up">Illustrative 3D visualisations of residential interiors, showing how layout, joinery, finishes and lighting are brought together in one coordinated design.</p>
+        <p class="spaces__intro" data-reveal="up">Explore how layout, joinery, finishes and lighting come together across the rooms of a home, in one coordinated design.</p>
       </div>
 
       <div class="container spaces__layout" data-room-viewer>
@@ -322,16 +322,29 @@
 
         <div class="spaces__stage" data-cursor="explore">
           <div class="spaces__frame" data-viewer-frame>
-            <!-- Images + depth maps: assets/images/room-<name>-{800,1600}.{webp,jpg} and room-<name>-depth.png -->
-            <div class="spaces__fallback" data-viewer-fallback>
-              <img class="is-active" data-fallback-room="living" src="assets/images/room-living-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a living room: bouclé sofa, oak slat wall and garden glazing.">
-              <img data-fallback-room="bedroom" src="assets/images/room-bedroom-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a bedroom: timber headboard wall, linen bed and sheer curtains.">
-              <img data-fallback-room="kitchen" src="assets/images/room-kitchen-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a kitchen: oak joinery, marble splashback and an island.">
-              <img data-fallback-room="dining" src="assets/images/room-dining-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a dining room: oak table, linen chairs and a linear pendant.">
-              <img data-fallback-room="office" src="assets/images/room-office-1600.jpg" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a study: walnut bookcase wall, desk facing the garden and reading chair.">
+            <!-- Room photos: assets/images/room-<name>-{800,1600}.{webp,jpg} -->
+            <div class="spaces__slides">
+              <picture data-room-slide="living" class="is-active">
+                <source type="image/webp" srcset="assets/images/room-living-800.webp 800w, assets/images/room-living-1600.webp 1600w" sizes="(min-width: 992px) 60vw, 92vw">
+                <img src="assets/images/room-living-1600.jpg" srcset="assets/images/room-living-800.jpg 800w, assets/images/room-living-1600.jpg 1600w" sizes="(min-width: 992px) 60vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a living room: bouclé sofa, oak slat wall and garden glazing.">
+              </picture>
+              <picture data-room-slide="bedroom">
+                <source type="image/webp" srcset="assets/images/room-bedroom-800.webp 800w, assets/images/room-bedroom-1600.webp 1600w" sizes="(min-width: 992px) 60vw, 92vw">
+                <img src="assets/images/room-bedroom-1600.jpg" srcset="assets/images/room-bedroom-800.jpg 800w, assets/images/room-bedroom-1600.jpg 1600w" sizes="(min-width: 992px) 60vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a bedroom: timber headboard wall, linen bed and sheer curtains.">
+              </picture>
+              <picture data-room-slide="kitchen">
+                <source type="image/webp" srcset="assets/images/room-kitchen-800.webp 800w, assets/images/room-kitchen-1600.webp 1600w" sizes="(min-width: 992px) 60vw, 92vw">
+                <img src="assets/images/room-kitchen-1600.jpg" srcset="assets/images/room-kitchen-800.jpg 800w, assets/images/room-kitchen-1600.jpg 1600w" sizes="(min-width: 992px) 60vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a kitchen: oak joinery, marble splashback and an island.">
+              </picture>
+              <picture data-room-slide="dining">
+                <source type="image/webp" srcset="assets/images/room-dining-800.webp 800w, assets/images/room-dining-1600.webp 1600w" sizes="(min-width: 992px) 60vw, 92vw">
+                <img src="assets/images/room-dining-1600.jpg" srcset="assets/images/room-dining-800.jpg 800w, assets/images/room-dining-1600.jpg 1600w" sizes="(min-width: 992px) 60vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a dining room: oak table, linen chairs and a linear pendant.">
+              </picture>
+              <picture data-room-slide="office">
+                <source type="image/webp" srcset="assets/images/room-office-800.webp 800w, assets/images/room-office-1600.webp 1600w" sizes="(min-width: 992px) 60vw, 92vw">
+                <img src="assets/images/room-office-1600.jpg" srcset="assets/images/room-office-800.jpg 800w, assets/images/room-office-1600.jpg 1600w" sizes="(min-width: 992px) 60vw, 92vw" width="1600" height="1000" loading="lazy" decoding="async" alt="Visualisation of a study: walnut bookcase wall, desk facing the garden and reading chair.">
+              </picture>
             </div>
-            <canvas class="spaces__canvas" data-viewer-canvas aria-hidden="true"></canvas>
-            <p class="spaces__hint" aria-hidden="true">Move to look around</p>
           </div>
         </div>
 

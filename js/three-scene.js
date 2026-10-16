@@ -1,10 +1,7 @@
 /* ==========================================================================
    Wellfit Designs — three-scene.js
-   Real-time Three.js scenes:
-     • HeroScene  – the furnished living room behind the hero (mouse +
-                    scroll driven camera, soft shadows, PBR, subtle life)
-     • Ornament   – small floating 3D objects used as quiet accents
-                    (architectural wireframe, material spheres, blocks)
+   Real-time Three.js ornaments: small floating 3D objects used as quiet
+   accents (architectural wireframe, material spheres, blocks).
 
    Loaded on demand by main.js on devices that can afford real-time 3D.
    Depends on window.THREE (assets/vendor) and window.FormaKit (room-kit.js).
@@ -18,9 +15,7 @@
   if (!THREE || !Kit) return;
 
   const TEXTURE_DIR = 'assets/textures/';
-  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const lerp = (a, b, t) => a + (b - a) * t;
-  const ease = (t) => t * t * (3 - 2 * t);
 
   /* ------------------------------------------------------------------------
      Shared materials
@@ -75,235 +70,6 @@
       io.disconnect();
       document.removeEventListener('visibilitychange', update);
     };
-  }
-
-  /* ------------------------------------------------------------------------
-     HeroScene
-     ------------------------------------------------------------------------ */
-
-  // Camera path through the living room, driven by scroll progress (0..1).
-  const CAMERA_PATH = {
-    from: { pos: [2.9, 1.35, 3.25], target: [-1.6, 1.3, -1.6] },
-    to: { pos: [0.55, 1.18, 1.05], target: [-3.0, 1.05, -1.25] },
-  };
-
-  class HeroScene {
-    constructor(canvas, options = {}) {
-      this.canvas = canvas;
-      this.options = options;
-      this.pointer = { x: 0, y: 0 };
-      this.smooth = { x: 0, y: 0, scroll: 0 };
-      this.scroll = 0;
-      this.running = false;
-      this.clock = new THREE.Timer();
-      this.swayers = [];
-      this.onPointer = this.onPointer.bind(this);
-      this.tick = this.tick.bind(this);
-    }
-
-    async init() {
-      const canvas = this.canvas;
-      const large = window.innerWidth >= 1200;
-      this.quality = large && (window.devicePixelRatio || 1) <= 2 ? 'high' : 'medium';
-
-      const renderer = (this.renderer = new THREE.WebGLRenderer({
-        canvas,
-        antialias: true,
-        powerPreference: 'high-performance',
-      }));
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, this.quality === 'high' ? 1.5 : 1.25));
-      renderer.outputColorSpace = THREE.SRGBColorSpace;
-      renderer.toneMapping = THREE.AgXToneMapping;
-      renderer.toneMappingExposure = 1.3;
-      renderer.shadowMap.enabled = true;
-      renderer.shadowMap.type = THREE.PCFShadowMap;
-
-      const M = (this.materials = await getMaterials(renderer.capabilities.getMaxAnisotropy()));
-      const room = Kit.createRoom('living', M, { realtime: true });
-      const scene = (this.scene = new THREE.Scene());
-      scene.add(room.root);
-
-      // Image-based lighting from the same sky used by the offline renders.
-      const L = room.lighting;
-      const sky = (this.sky = Kit.skyTexture(L.skyTop, L.skyBottom, { size: 128, sunDir: L.sun }));
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      this.envMap = pmrem.fromEquirectangular(sky).texture;
-      pmrem.dispose();
-      scene.environment = this.envMap;
-      scene.environmentIntensity = 0.5;
-      scene.background = sky;
-      scene.backgroundIntensity = 1.25;
-      scene.fog = new THREE.Fog(0xe8e3da, 22, 70);
-
-      scene.add(new THREE.HemisphereLight(0xfff4e6, 0xb49c80, 0.4));
-
-      // Low garden sun raking through the glazing — the key light.
-      const sun = (this.sun = new THREE.DirectionalLight(L.sunColor, 4));
-      sun.position.copy(new THREE.Vector3(...L.sun).normalize().multiplyScalar(18));
-      sun.target.position.set(-1, 0, 0);
-      sun.castShadow = true;
-      const s = sun.shadow;
-      s.mapSize.set(this.quality === 'high' ? 2048 : 1024, this.quality === 'high' ? 2048 : 1024);
-      s.camera.left = -9; s.camera.right = 9; s.camera.top = 9; s.camera.bottom = -9;
-      s.camera.near = 1; s.camera.far = 45;
-      s.bias = -0.0004;
-      s.normalBias = 0.03;
-      s.radius = 4; // softened penumbra (PCF)
-      scene.add(sun, sun.target);
-
-      // Warm bounce from the floor/window side, and the pendant's glow.
-      const bounce = new THREE.DirectionalLight(0xffe2c4, 0.45);
-      bounce.position.set(3, 1, 2);
-      scene.add(bounce);
-      const lamp = (this.lamp = new THREE.PointLight(0xffd29a, 2.4, 7, 2));
-      lamp.position.set(-1.2, 2.25, -0.4);
-      scene.add(lamp);
-
-      room.root.traverse((o) => {
-        if (o.userData.sway || o.userData.swing) {
-          this.swayers.push({ obj: o, kind: o.userData.sway || 'swing', phase: Math.random() * Math.PI * 2, base: o.rotation.clone() });
-        }
-        // Shadow casting for tiny objects is wasted work.
-        if (o.isMesh && o.geometry) {
-          o.geometry.computeBoundingSphere();
-          if (o.geometry.boundingSphere.radius < 0.06) o.castShadow = false;
-        }
-      });
-
-      this.camera = new THREE.PerspectiveCamera(52, 1, 0.1, 150);
-      this.shift = room.cameras.hero.shift || 0;
-
-      // Ambient occlusion grounds furniture on large screens.
-      if (this.quality === 'high' && THREE.EffectComposer && THREE.GTAOPass) {
-        const composer = (this.composer = new THREE.EffectComposer(renderer));
-        composer.addPass(new THREE.RenderPass(scene, this.camera));
-        const gtao = new THREE.GTAOPass(scene, this.camera, 1, 1);
-        gtao.updateGtaoMaterial({ radius: 0.55, distanceExponent: 1.6, thickness: 1.5, scale: 1, samples: 12 });
-        gtao.updatePdMaterial({ lumaPhi: 10, depthPhi: 2, normalPhi: 3, radius: 5, rings: 2, samples: 12 });
-        gtao.blendIntensity = 0.85;
-        composer.addPass(gtao);
-        composer.addPass(new THREE.OutputPass());
-      }
-
-      this.resize();
-      this.resizeObserver = new ResizeObserver(() => this.resize());
-      this.resizeObserver.observe(canvas.parentElement);
-      window.addEventListener('pointermove', this.onPointer, { passive: true });
-      this.stopWatching = watchVisibility(canvas, (visible) => (visible ? this.start() : this.stop()));
-
-      // Compile shaders up front so the first frame doesn't stutter.
-      this.updateCamera(0);
-      await renderer.compileAsync(scene, this.camera);
-      this.render();
-      return this;
-    }
-
-    resize() {
-      const parent = this.canvas.parentElement;
-      const w = parent.clientWidth, h = parent.clientHeight;
-      if (!w || !h) return;
-      this.renderer.setSize(w, h, false);
-      if (this.composer) this.composer.setSize(w, h);
-      this.camera.aspect = w / h;
-      // Wide cameras on portrait screens: open the lens a little.
-      this.camera.fov = w / h < 1 ? 64 : 52;
-      // Architectural lens shift keeps verticals straight.
-      this.camera.setViewOffset(w, h, 0, this.shift * h, w, h);
-      this.camera.updateProjectionMatrix();
-      if (!this.running) this.render();
-    }
-
-    onPointer(e) {
-      this.pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
-      this.pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
-    }
-
-    /** Scroll progress through the hero (0 = top, 1 = fully scrolled). */
-    setScroll(progress) {
-      this.scroll = clamp(progress, 0, 1);
-      if (!this.running) {
-        this.smooth.scroll = this.scroll;
-        this.updateCamera(0);
-        this.render();
-      }
-    }
-
-    updateCamera(time) {
-      const p = ease(this.smooth.scroll);
-      const { from, to } = CAMERA_PATH;
-      const mx = this.smooth.x, my = this.smooth.y;
-      const breathe = Math.sin(time * 0.25) * 0.03;
-      this.camera.position.set(
-        lerp(from.pos[0], to.pos[0], p) + mx * 0.3,
-        lerp(from.pos[1], to.pos[1], p) - my * 0.12 + breathe * 0.4,
-        lerp(from.pos[2], to.pos[2], p) + breathe,
-      );
-      this.camera.lookAt(
-        lerp(from.target[0], to.target[0], p) + mx * 0.55,
-        lerp(from.target[1], to.target[1], p) - my * 0.22,
-        lerp(from.target[2], to.target[2], p),
-      );
-    }
-
-    tick() {
-      this.clock.update();
-      const dt = Math.min(this.clock.getDelta(), 0.05);
-      const t = this.clock.getElapsed();
-      const k = 1 - Math.pow(0.001, dt); // frame-rate independent smoothing
-      this.smooth.x = lerp(this.smooth.x, this.pointer.x, k * 0.9);
-      this.smooth.y = lerp(this.smooth.y, this.pointer.y, k * 0.9);
-      this.smooth.scroll = lerp(this.smooth.scroll, this.scroll, Math.min(1, k * 2.4));
-      this.updateCamera(t);
-
-      // Light responds very slightly to the pointer.
-      this.sun.intensity = 4 * (1 + this.smooth.x * 0.05);
-      this.lamp.intensity = 2.4 * (1 - this.smooth.y * 0.08) + Math.sin(t * 0.8) * 0.05;
-
-      // Subtle life: foliage and sheers breathe, the pendant drifts.
-      for (const s of this.swayers) {
-        const o = s.obj;
-        if (s.kind === 'plant') {
-          o.rotation.z = s.base.z + Math.sin(t * 0.7 + s.phase) * 0.008 + this.smooth.x * 0.006;
-          o.rotation.x = s.base.x + Math.cos(t * 0.5 + s.phase) * 0.005;
-        } else if (s.kind === 'curtain') {
-          o.rotation.x = s.base.x + Math.sin(t * 0.6 + s.phase) * 0.012;
-          o.scale.x = 1 + Math.sin(t * 0.45 + s.phase) * 0.012;
-        } else {
-          o.rotation.z = s.base.z + Math.sin(t * 0.9 + s.phase) * 0.012 + this.smooth.x * 0.01;
-        }
-      }
-      this.render();
-    }
-
-    render() {
-      if (this.composer) this.composer.render();
-      else this.renderer.render(this.scene, this.camera);
-    }
-
-    start() {
-      if (this.running) return;
-      this.running = true;
-      this.clock.reset();
-      this.renderer.setAnimationLoop(this.tick);
-    }
-
-    stop() {
-      if (!this.running) return;
-      this.running = false;
-      this.renderer.setAnimationLoop(null);
-    }
-
-    dispose() {
-      this.stop();
-      if (this.stopWatching) this.stopWatching();
-      if (this.resizeObserver) this.resizeObserver.disconnect();
-      window.removeEventListener('pointermove', this.onPointer);
-      Kit.dispose(this.scene);
-      if (this.envMap) this.envMap.dispose();
-      if (this.sky) this.sky.dispose();
-      if (this.composer) this.composer.dispose();
-      this.renderer.dispose();
-    }
   }
 
   /* ------------------------------------------------------------------------
@@ -487,9 +253,6 @@
   }
 
   FORMA.Three = {
-    async createHero(canvas, options) {
-      return new HeroScene(canvas, options).init();
-    },
     async createOrnaments(canvases) {
       const list = [];
       for (const canvas of canvases) {

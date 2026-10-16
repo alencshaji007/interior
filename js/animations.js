@@ -5,7 +5,7 @@
        title reveal on inner pages)
      • text splitting and line reveals
      • fade/slide-up and clip-path image reveals, image parallax
-     • pinned hero with scroll-driven 3D camera and cinematic crop
+     • pinned hero with a slow push-in and cinematic crop
      • horizontal services scroll, process timelines, CTA
    Everything degrades to "content simply visible" when GSAP is missing or
    the visitor prefers reduced motion.
@@ -115,7 +115,7 @@
         return Promise.resolve();
       }
       const { gsap } = this;
-      const heroMedia = $$('.hero__poster img, .hero__canvas');
+      const heroMedia = $$('.hero__poster img');
       const heroItems = $$('[data-hero-item]');
       return new Promise((resolve) => {
         const tl = gsap.timeline({ onComplete: () => { done(); resolve(); } });
@@ -193,8 +193,8 @@
       }
     },
 
-    // Hero: pinned while the 3D camera walks into the room; content lifts
-    // away and the frame tightens into a cinematic crop before release.
+    // Hero: pinned while the photo pushes in; content lifts away and the
+    // frame tightens into a cinematic crop before release.
     setupHero() {
       const { gsap } = this;
       const hero = $('[data-hero]');
@@ -214,7 +214,6 @@
             pin: true,
             scrub: 0.6,
             anticipatePin: 1,
-            onUpdate: (self) => { if (FORMA.hero) FORMA.hero.setScroll(self.progress); },
           },
         });
         tl.to(content, { y: -80, opacity: 0, duration: 0.45 }, 0)
@@ -222,7 +221,6 @@
           .to('.hero__poster img', { scale: 1.14, duration: 1 }, 0)
           .to('.hero__shade', { opacity: 0.35, duration: 0.6 }, 0)
           .fromTo(media, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(7% 4% 7% 4%)', duration: 0.45, ease: 'power2.inOut' }, 0.55);
-        return () => { if (FORMA.hero) FORMA.hero.setScroll(0); };
       });
 
       mm.add('(max-width: 767px)', () => {
@@ -337,9 +335,9 @@
       });
     },
 
-    /** Small feedback pulse used by the room viewer's CSS fallback. */
+    /** Small feedback pulse when the room viewer changes room. */
     pulse(el) {
-      if (!this.enabled || !el || el.classList.contains('is-webgl')) return;
+      if (!this.enabled || !el) return;
       this.gsap.fromTo(el, { scale: 0.985 }, { scale: 1, duration: 1.2 });
     },
 

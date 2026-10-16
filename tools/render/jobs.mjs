@@ -36,11 +36,11 @@ export const JOBS = [
   { name: 'hero-living', room: 'living', camera: 'hero', size: 'hero', samples: 128 },
 
   // Room showcase (with depth maps for the 3D parallax viewer).
-  { name: 'room-living', room: 'living', camera: 'wide', size: L, samples: 128, depth: true },
-  { name: 'room-bedroom', room: 'bedroom', camera: 'main', size: L, samples: 128, depth: true },
-  { name: 'room-kitchen', room: 'kitchen', camera: 'main', size: L, samples: 128, depth: true },
-  { name: 'room-dining', room: 'dining', camera: 'main', size: L, samples: 128, depth: true },
-  { name: 'room-office', room: 'office', camera: 'main', size: L, samples: 128, depth: true },
+  { name: 'room-living', room: 'living', camera: 'wide', size: L, samples: 128 },
+  { name: 'room-bedroom', room: 'bedroom', camera: 'main', size: L, samples: 128 },
+  { name: 'room-kitchen', room: 'kitchen', camera: 'main', size: L, samples: 128 },
+  { name: 'room-dining', room: 'dining', camera: 'main', size: L, samples: 128 },
+  { name: 'room-office', room: 'office', camera: 'main', size: L, samples: 128 },
 
   // Editorial / section imagery.
   { name: 'cta-dusk', room: 'living', camera: 'window', size: 'wide', samples: 160,
