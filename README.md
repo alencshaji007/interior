@@ -98,7 +98,7 @@ Each project has its own scene built to its brief:
 | Avery Davis Home | `living` with the `minimal` palette |
 | Richard Sanchez | `villa` hall with the `stone` palette |
 
-The project pages say the images are 3D design visualisations. When approved project photography is available, replace the files (keeping names and aspect ratios) and remove that note.
+When approved project photography is available, it can replace these renders.
 
 Each image exists as `assets/images/<name>-<width>.{webp,jpg}`, usually in two widths. To replace one, keep the name and aspect ratio:
 
@@ -149,7 +149,7 @@ All four exit with a non-zero status on failure.
 ## Before launch
 
 - **Enquiry form**: it validates and shows a confirmation, but there is no backend, so enquiries are not sent anywhere yet. Connect it to a form service or endpoint.
-- **Project photographs**: the content document asks for approved project photographs and verified descriptions before publication. The project images are currently 3D visualisations (noted on the pages); swap in approved photography when available.
+- **Project photographs**: the content document asks for approved project photographs and verified descriptions before publication. The project images are currently 3D visualisations; swap in approved photography when available.
 - **Domain**: canonical and Open Graph URLs assume `https://www.wellfitdesigns.com/`.
 
 ## Accessibility & performance
