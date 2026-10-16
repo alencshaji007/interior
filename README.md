@@ -84,7 +84,7 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 
 ## Imagery
 
-The seven main project images (`project-oriana`, `-inva`, `-smartleave`, `-hoc`, `-strada`, `-avery`, `-sanchez`) are photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below). The other stills are path-traced design visualisations (see *Regenerating the visualisations*), and `tools/photoreal` has prompts ready to replace them too. The live 3D hero poster and the room viewer images stay 3D. `og-image-1200.jpg` is the hero poster composed with the logo.
+Six of the main project images (`project-oriana`, `-inva`, `-smartleave`, `-strada`, `-avery`, `-sanchez`) are photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below). `project-hoc` and the other stills are path-traced design visualisations (see *Regenerating the visualisations*), and `tools/photoreal` has prompts ready to replace them too. The live 3D hero poster and the room viewer images stay 3D. `og-image-1200.jpg` is the hero poster composed with the logo.
 
 The project close-ups are rendered from a scene built to each brief:
 
