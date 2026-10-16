@@ -323,16 +323,24 @@
     let paused = false;
     let inView = false;
 
+    const hideTimers = new Map();
+
     const show = (next) => {
       next = (next + slides.length) % slides.length;
       if (next === index) return;
       const current = slides[index];
       const incoming = slides[next];
       current.classList.add('is-leaving');
-      window.setTimeout(() => {
+      hideTimers.set(current, window.setTimeout(() => {
+        hideTimers.delete(current);
         current.hidden = true;
         current.classList.remove('is-leaving', 'is-active');
-      }, env.reducedMotion ? 0 : 500);
+      }, env.reducedMotion ? 0 : 500));
+      // A slide brought back before its exit finished must not be hidden by
+      // that pending timer.
+      window.clearTimeout(hideTimers.get(incoming));
+      hideTimers.delete(incoming);
+      incoming.classList.remove('is-leaving');
       incoming.hidden = false;
       void incoming.offsetWidth;
       incoming.classList.add('is-active');

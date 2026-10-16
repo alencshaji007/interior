@@ -313,7 +313,8 @@
           }
           if (this.from) {
             this.renderer.draw(this.from, this.transition ? this.to : this.from, this.transition ? this.progress : 0, this.mouse);
-            if (!this.frame.classList.contains('is-webgl')) this.frame.classList.add('is-webgl');
+            // Keep the CSS fallback for a room whose images failed to load.
+            this.frame.classList.toggle('is-webgl', this.failedRoom !== this.current);
           } else {
             this.ensureLoaded(this.current).then((data) => { if (!this.from) this.from = data; }).catch(() => {});
           }
@@ -339,6 +340,7 @@
 
         if (this.renderer) {
           this.ensureLoaded(room).then((data) => {
+            if (this.failedRoom === room) this.failedRoom = null;
             if (this.current !== room) return;
             if (!this.from) { this.from = data; return; }
             this.to = data;
@@ -347,6 +349,7 @@
             this.loop();
           }).catch(() => {
             // Image failed: keep the CSS fallback visible for this room.
+            this.failedRoom = room;
             this.frame.classList.remove('is-webgl');
           });
         }
