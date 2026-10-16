@@ -31,11 +31,11 @@ const PALETTES = {
 };
 
 export const JOBS = [
-  // Hero poster (fallback when WebGL/motion is unavailable). The social
-  // card (og-image-1200.jpg) is composed from this poster and the logo.
+  // Home hero image, until its photorealistic replacement is published. The
+  // social card (og-image-1200.jpg) is composed from it and the logo.
   { name: 'hero-living', room: 'living', camera: 'hero', size: 'hero', samples: 128 },
 
-  // Room showcase (with depth maps for the 3D parallax viewer).
+  // Room photos for the tabbed room showcase on the services page.
   { name: 'room-living', room: 'living', camera: 'wide', size: L, samples: 128 },
   { name: 'room-bedroom', room: 'bedroom', camera: 'main', size: L, samples: 128 },
   { name: 'room-kitchen', room: 'kitchen', camera: 'main', size: L, samples: 128 },

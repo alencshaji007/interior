@@ -94,7 +94,13 @@
         });
         this.panel.setAttribute('aria-labelledby', 'tab-' + room);
         this.updatePanel(ROOMS[room], ORDER.indexOf(room));
-        this.slides.forEach((slide) => slide.classList.toggle('is-active', slide.dataset.roomSlide === room));
+        this.slides.forEach((slide) => {
+          const on = slide.dataset.roomSlide === room;
+          slide.classList.toggle('is-active', on);
+          // Hidden rooms stay out of the accessibility tree.
+          if (on) slide.removeAttribute('aria-hidden');
+          else slide.setAttribute('aria-hidden', 'true');
+        });
         if (userInitiated && FORMA.Animations && FORMA.Animations.pulse) FORMA.Animations.pulse(this.frame, previous);
       },
 

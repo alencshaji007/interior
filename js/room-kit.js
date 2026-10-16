@@ -5,12 +5,11 @@
    furnished room presets built with Three.js.
 
    It is shared by two consumers:
-     1. js/three-scene.js      – the live, real-time hero scene
-     2. tools/render/          – the offline path tracer that produces the
-                                 still "photography" in assets/images
-
-   Because both use the exact same rooms, the 3D hero and the imagery across
-   the site read as one consistent body of work.
+     1. js/three-scene.js      – the small real-time ornaments (materials,
+                                 sky texture and disposal only)
+     2. tools/render/          – the offline path tracer that renders the
+                                 3D stills in assets/images that have not yet
+                                 been replaced by photorealistic ones
 
    Classic script (no ES modules) so the site runs straight from file://.
    Requires window.THREE (assets/vendor/three.bundle.min.js).
@@ -712,8 +711,8 @@
     M.hedge.userData.texMeters = 1.5;
     M.bronze.userData.texMeters = 0.6;
 
-    // Commercial-interior materials, built on first use so the live hero
-    // (which never touches them) pays nothing for them.
+    // Commercial-interior materials, built on first use so the live
+    // ornaments (which never touch them) pay nothing for them.
     const lazy = (name, make) => Object.defineProperty(M, name, {
       configurable: true,
       enumerable: false,

@@ -2064,14 +2064,16 @@ html:not(.js) .services__progress {
   opacity: 1;
 }
 
+/* Every room has the slow drift but only the active one plays it: an
+   outgoing photo freezes where it is while it fades instead of jumping. */
 .spaces__slides img {
   object-fit: cover;
   transform: scale(1.04);
+  animation: room-drift 20s ease-in-out infinite alternate paused;
 }
 
-/* The active room drifts slowly so the photo feels alive. */
 .spaces__slides picture.is-active img {
-  animation: room-drift 20s ease-in-out infinite alternate;
+  animation-play-state: running;
 }
 
 @keyframes room-drift {
@@ -2906,7 +2908,7 @@ html:not(.js) .services__progress {
   .loader__caption { opacity: 1; }
   .hero__scroll-line::after { display: none; }
   .hero__poster,
-  .spaces__slides picture.is-active img { animation: none !important; }
+  .spaces__slides img { animation: none !important; }
   .media [data-parallax],
   .cta__media img { height: 100%; margin-top: 0; }
 }

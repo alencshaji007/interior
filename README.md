@@ -129,7 +129,7 @@ The pipeline was last run with `bpy` 5.0 on Python 3.11. `--samples 24 --preview
 cd tools/photoreal
 pip install -r requirements.txt
 export HF_TOKEN=...                                  # a Hugging Face token; generation uses its Spaces GPU quota
-python photoreal.py generate                         # all 31 jobs; skips ones already generated
+python photoreal.py generate                         # every job; skips ones already generated
 python photoreal.py generate --only cta-dusk --variants 3
 python photoreal.py sheet                            # out/sheet.jpg to review the picked images
 python photoreal.py publish --pick cta-dusk=2        # writes assets/images/<name>-<width>.{jpg,webp}

@@ -20,6 +20,9 @@ const state = () => p.evaluate(() => {
     active: active.map((a) => a.dataset.roomSlide).join(','),
     loaded: !!img && img.complete && img.naturalWidth > 0,
     name: document.querySelector('[data-room-name]').textContent,
+    // only the active room is exposed to assistive technology
+    ariaSynced: [...document.querySelectorAll('[data-room-slide]')]
+      .every((s) => s.classList.contains('is-active') === !s.hasAttribute('aria-hidden')),
   };
 });
 const living = await state();
@@ -34,7 +37,8 @@ const dining = await state();
 const legacy = await p.evaluate(() => !!document.querySelector('[data-viewer-canvas], [data-fallback-room]'));
 console.log({ living, kitchen, dining, legacy });
 const ok = living.active === 'living' && living.loaded && kitchen.active === 'kitchen' && kitchen.loaded &&
-  kitchen.name === 'Kitchen' && dining.active === 'dining' && dining.name === 'Dining' && !legacy;
+  kitchen.name === 'Kitchen' && dining.active === 'dining' && dining.name === 'Dining' && !legacy &&
+  [living, kitchen, dining].every((s) => s.ariaSynced);
 console.log(errors.length ? errors.join('\n') : 'no errors');
 await b.close();
 process.exit(ok && !errors.length ? 0 : 1);
