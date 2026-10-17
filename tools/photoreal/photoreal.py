@@ -54,7 +54,7 @@ JOBS = [
      'a full-height oak shelving wall styled with books, binders and ceramics at the back, floor-to-ceiling windows with soft morning daylight and generic modern glass towers in the haze, '
      f'grey carpet tiles, slim linear ceiling lights. Empty and tidy. {CAMERA}.'),
     ('project-oriana-detail', 'square',
-     'Close-up interior photograph of a white bench desk in a bright office: an open silver laptop, a notebook and a ceramic cup, '
+     'Close-up interior photograph of a white bench desk in a bright office: an open silver laptop seen from the front with its screen switched off, a notebook and a ceramic cup, '
      'a terracotta planter trough with glossy green plants along the desk edge, floor-to-ceiling glazing behind with soft daylight '
      'and blurred generic glass towers outside. Shallow depth of field, Sony A7R IV, 50mm, f/2.8, true-to-life textures.'),
     ('project-inva', 'portrait',
