@@ -1,6 +1,6 @@
 // Browser side of the offline pipeline: build a FormaKit room exactly as the
-// site does, export it as GLB for Blender/Cycles, and rasterise a depth map
-// (used by the parallax room viewer) from the same camera.
+// site does, export it as GLB for Blender/Cycles, and (for jobs with `depth`)
+// rasterise a depth map from the same camera.
 import './globals.js';
 import '../../../js/room-kit.js';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';

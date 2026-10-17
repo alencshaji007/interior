@@ -1,13 +1,14 @@
 {
-  "name": "forma-render-tools",
+  "name": "wellfit-render-tools",
   "version": "1.0.0",
-  "description": "Offline tooling for the FORMA site: vendor bundles, procedural textures and Cycles renders.",
+  "description": "Offline tooling for the Wellfit Designs site: vendor bundles, procedural textures and Cycles renders.",
   "scripts": {
     "build:vendor": "esbuild src/three-vendor.js --bundle --minify --format=iife --legal-comments=none --outfile=../../assets/vendor/three.bundle.min.js && cp node_modules/gsap/dist/gsap.min.js node_modules/gsap/dist/ScrollTrigger.min.js ../../assets/vendor/",
     "build:exporter": "esbuild src/export-entry.js --bundle --format=iife --outfile=export-bundle.js",
     "textures": "npm run build:exporter && node export-textures.mjs",
     "render": "npm run build:exporter && node pipeline.mjs",
-    "check": "node check-site.mjs http://127.0.0.1:8080/index.html out 1440 1024 768 390"
+    "check": "node check-site.mjs http://127.0.0.1:8080/ out 1440 1024 768 390",
+    "check:ui": "node check-ui.mjs http://127.0.0.1:8080/"
   },
   "dependencies": {
     "esbuild": "^0.28.2",
