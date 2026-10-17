@@ -76,13 +76,12 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 
 ## Imagery
 
-Six of the main project images (`project-oriana`, `-inva`, `-smartleave`, `-strada`, `-avery`, `-sanchez`) are photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below). `project-hoc` and the other stills are path-traced design visualisations (see *Regenerating the visualisations*), and `tools/photoreal` has prompts ready to replace them too. `og-image-1200.jpg` is the hero image composed with the logo; `photoreal.py publish` rebuilds it whenever it publishes the hero.
+Photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below) now cover the home hero (`hero-living`), the home introduction (`intro-dining`), four of the five room photos (`room-living`, `-bedroom`, `-kitchen`, `-dining`), all seven main project images and the Oriana close-up. The other stills are path-traced design visualisations (see *Regenerating the visualisations*); `tools/photoreal` has prompts ready to replace them, and `tools/render/jobs.mjs` lists only the ones still rendered. `og-image-1200.jpg` is the hero image composed with the logo; `photoreal.py publish` rebuilds it whenever it publishes the hero.
 
-The project close-ups are rendered from a scene built to each brief:
+The remaining project close-ups are rendered from a scene built to each brief:
 
 | Project | Close-up scene (`room-kit.js`) |
 | --- | --- |
-| Oriana Trading & Sons | `workspace`: bench desks with terracotta planter troughs, oak library wall, city views |
 | INVA Investors | `lounge`: terracotta arched alcoves with banquettes, lounge by the glazing |
 | Smart Leave | `reception`: stone-fronted counter, backlit feature wall, glass meeting room |
 | HOC Creative | `studio`: paper backdrop and softboxes, acoustic panel wall, exposed ducts |

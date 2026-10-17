@@ -31,15 +31,10 @@ const PALETTES = {
 };
 
 export const JOBS = [
-  // Home hero image, until its photorealistic replacement is published. The
-  // social card (og-image-1200.jpg) is composed from it and the logo.
-  { name: 'hero-living', room: 'living', camera: 'hero', size: 'hero', samples: 128 },
+  // Stills not yet replaced by photorealistic ones from tools/photoreal; drop
+  // each entry once its photo is published.
 
   // Room photos for the tabbed room showcase on the services page.
-  { name: 'room-living', room: 'living', camera: 'wide', size: L, samples: 128 },
-  { name: 'room-bedroom', room: 'bedroom', camera: 'main', size: L, samples: 128 },
-  { name: 'room-kitchen', room: 'kitchen', camera: 'main', size: L, samples: 128 },
-  { name: 'room-dining', room: 'dining', camera: 'main', size: L, samples: 128 },
   { name: 'room-office', room: 'office', camera: 'main', size: L, samples: 128 },
 
   // Editorial / section imagery.
@@ -57,16 +52,13 @@ export const JOBS = [
   { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
 
   // Project close-ups. The other main project images are photorealistic stills from tools/photoreal.
-  { name: 'project-oriana-detail', room: 'workspace', camera: 'detail', size: 'detail', samples: 128, palette: 'office' },
   { name: 'project-inva-detail', room: 'lounge', camera: 'detail', size: 'detail', samples: 128, palette: 'lounge' },
   { name: 'project-smartleave-detail', room: 'reception', camera: 'meeting', size: 'detail', samples: 128, palette: 'reception' },
-  { name: 'project-hoc', room: 'studio', camera: 'portrait', size: P, samples: 128, palette: 'studio' },   // until its photoreal redo
   { name: 'project-hoc-detail', room: 'studio', camera: 'detail', size: 'detail', samples: 128, palette: 'studio' },
   { name: 'project-strada-detail', room: 'meeting', camera: 'detail', size: 'detail', samples: 128, palette: 'meeting' },
   { name: 'project-avery-detail', room: 'kitchen', camera: 'detail', size: 'detail', samples: 128, palette: 'minimal' },
 
   // Page imagery.
-  { name: 'intro-dining', room: 'dining', camera: 'angle', size: P, samples: 128, palette: 'terra', options: { stoneWalls: false } },
   { name: 'about-lounge', room: 'lounge', camera: 'lounge', size: P, samples: 128, palette: 'lounge' },
   { name: 'about-band', room: 'workspace', camera: 'main', size: 'band', samples: 128, palette: 'office' },
   { name: 'services-hero', room: 'reception', camera: 'wait', size: P, samples: 128, palette: 'reception' },
