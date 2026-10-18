@@ -13,6 +13,8 @@ changes. Publishing the hero also rebuilds the Open Graph card.
   python photoreal.py sheet                     # out/sheet.jpg: the picked image for each job
   python photoreal.py publish                   # write assets/images/<name>-<width>.{jpg,webp}
   python photoreal.py publish --pick project-hoc=2
+  python photoreal.py crop                      # close-ups cut from their main photos
+  python photoreal.py publish --only project-hoc-detail --pick project-hoc-detail=crop
 
 Raw images and their settings are kept in out/<name>/ (git-ignored). A job's
 picked variant defaults to 1, its fixed seed; --pick name=N chooses another.
@@ -209,6 +211,21 @@ SEEDS = {name: 7000 + i * 17 for i, (name, _, _) in enumerate(JOBS)}
 ALT = {
     'room-office': 'Visualisation of a study: walnut bookcase wall, a desk, a reading chair and a window onto the garden.',
     'svc-design': 'Interior design desk with printed office floor plans and oak, travertine and fabric samples.',
+    'project-smartleave-detail': 'Brass disc on the oak-panelled wall above the veined stone reception counter.',
+    'project-hoc-detail': 'Softbox on a light stand beside the orange paper backdrop.',
+    'project-avery-detail': 'Leather lounge chair and stone coffee table by the garden glazing.',
+}
+
+# Project close-ups are square crops of their published main photo, so each pair
+# always shows the same space: name -> (main job, main variant, crop box).
+# `python photoreal.py crop` writes them as out/<name>/crop.png.
+DETAIL_CROPS = {
+    'project-oriana-detail': ('project-oriana', '2', (120, 470, 680, 1030)),
+    'project-inva-detail': ('project-inva', '3', (60, 420, 620, 980)),
+    'project-smartleave-detail': ('project-smartleave', '1', (200, 380, 760, 940)),
+    'project-hoc-detail': ('project-hoc', '3', (440, 380, 1000, 940)),
+    'project-strada-detail': ('project-strada', '1', (470, 640, 990, 1160)),
+    'project-avery-detail': ('project-avery', '1', (600, 420, 1240, 1060)),
 }
 
 
@@ -287,8 +304,24 @@ def picks(args):
     chosen = {}
     for item in parse_list(args.pick):
         name, _, variant = item.partition('=')
-        chosen[name] = int(variant)
+        chosen[name] = variant          # a variant number, or 'crop'
     return chosen
+
+
+def crop(args):
+    for name in parse_list(args.only) or list(DETAIL_CROPS):
+        if name not in DETAIL_CROPS:
+            sys.exit(f'no crop defined for {name}')
+        main, variant, box = DETAIL_CROPS[name]
+        src = OUT / main / f'{variant}.png'
+        if not src.exists():
+            print(f'{name}: {src.relative_to(HERE)} is missing, skipped')
+            continue
+        dest = OUT / name / 'crop.png'
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        Image.open(src).convert('RGB').crop(box).save(dest)
+        dest.with_suffix('.json').write_text(json.dumps({'cropped_from': f'{main}/{variant}.png', 'box': box}, indent=2) + '\n')
+        print(f'{name}: {dest.relative_to(HERE)} from {main}/{variant}.png')
 
 
 def cover(img, width, height):
@@ -387,8 +420,11 @@ def main():
     for name, fn in (('publish', publish), ('sheet', sheet)):
         p = sub.add_parser(name, help=f'{name} the picked images')
         p.add_argument('--only', help='comma-separated job names')
-        p.add_argument('--pick', help='name=variant pairs, comma-separated')
+        p.add_argument('--pick', help="name=variant pairs, comma-separated (variant may be 'crop')")
         p.set_defaults(fn=fn)
+    c = sub.add_parser('crop', help='build project close-ups from their main photos')
+    c.add_argument('--only', help='comma-separated close-up names')
+    c.set_defaults(fn=crop)
     g.set_defaults(fn=generate)
     args = parser.parse_args()
     args.fn(args)

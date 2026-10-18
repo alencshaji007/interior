@@ -48,11 +48,6 @@ export const JOBS = [
   // Approvals & project management (desk study).
   { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
 
-  // Project close-ups. The other main project images are photorealistic stills from tools/photoreal.
-  { name: 'project-inva-detail', room: 'lounge', camera: 'detail', size: 'detail', samples: 128, palette: 'lounge' },
-  { name: 'project-hoc-detail', room: 'studio', camera: 'detail', size: 'detail', samples: 128, palette: 'studio' },
-  { name: 'project-avery-detail', room: 'kitchen', camera: 'detail', size: 'detail', samples: 128, palette: 'minimal' },
-
   // Page imagery.
   { name: 'about-band', room: 'workspace', camera: 'main', size: 'band', samples: 128, palette: 'office' },
   { name: 'services-hero', room: 'reception', camera: 'wait', size: P, samples: 128, palette: 'reception' },
