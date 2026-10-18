@@ -34,9 +34,6 @@ export const JOBS = [
   // Stills not yet replaced by photorealistic ones from tools/photoreal; drop
   // each entry once its photo is published.
 
-  // Room photos for the tabbed room showcase on the services page.
-  { name: 'room-office', room: 'office', camera: 'main', size: L, samples: 128 },
-
   // Editorial / section imagery.
   { name: 'cta-dusk', room: 'living', camera: 'window', size: 'wide', samples: 160,
     lighting: { sun: [-8, 1.2, -12], sunColor: '#ff9b5e', sunIntensity: 1.2, skyTop: '#39465a', skyBottom: '#d99c73', ground: '#4a443e', envIntensity: 0.55, lampIntensity: 12, lampSoftIntensity: 5, exposure: 1.25 } },
@@ -53,13 +50,10 @@ export const JOBS = [
 
   // Project close-ups. The other main project images are photorealistic stills from tools/photoreal.
   { name: 'project-inva-detail', room: 'lounge', camera: 'detail', size: 'detail', samples: 128, palette: 'lounge' },
-  { name: 'project-smartleave-detail', room: 'reception', camera: 'meeting', size: 'detail', samples: 128, palette: 'reception' },
   { name: 'project-hoc-detail', room: 'studio', camera: 'detail', size: 'detail', samples: 128, palette: 'studio' },
-  { name: 'project-strada-detail', room: 'meeting', camera: 'detail', size: 'detail', samples: 128, palette: 'meeting' },
   { name: 'project-avery-detail', room: 'kitchen', camera: 'detail', size: 'detail', samples: 128, palette: 'minimal' },
 
   // Page imagery.
-  { name: 'about-lounge', room: 'lounge', camera: 'lounge', size: P, samples: 128, palette: 'lounge' },
   { name: 'about-band', room: 'workspace', camera: 'main', size: 'band', samples: 128, palette: 'office' },
   { name: 'services-hero', room: 'reception', camera: 'wait', size: P, samples: 128, palette: 'reception' },
   { name: 'process-hero', room: 'meeting', camera: 'screen', size: P, samples: 128, palette: 'meeting' },

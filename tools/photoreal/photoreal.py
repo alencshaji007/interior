@@ -62,7 +62,7 @@ JOBS = [
      'a terracotta velvet banquette, round white marble cafe tables and cream boucle chairs in front, black dome pendants hanging in the '
      f'arches, large potted plants, warm oak plank floor, soft side daylight. Empty room. {CAMERA}.'),
     ('project-inva-detail', 'square',
-     'Close-up interior photograph of an arched alcove in a limewashed wall holding a terracotta velvet banquette, a small round white '
+     'Close-up interior photograph of an arched alcove in a smooth, freshly finished limewash wall holding a terracotta velvet banquette, a small round white '
      'marble cafe table with a ceramic vase, a cream boucle chair in the foreground, warm side daylight and soft shadows, oak floor. '
      'Hasselblad X2D, 45mm, f/4, shallow depth of field, tactile fabric and stone textures.'),
     ('project-smartleave', 'portrait',
@@ -113,7 +113,7 @@ JOBS = [
     ('about-band', 'wide',
      'Wide editorial interior photograph of a large open-plan office floor high in a modern tower: rows of white bench desks with black task '
      'chairs and planted troughs, a long oak collaboration table with cream chairs in the foreground, linear ceiling lights, grey '
-     'carpet, floor-to-ceiling glazing with generic modern glass towers in soft morning haze. Empty. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
+     'carpet, floor-to-ceiling glazing onto a hazy skyline of mixed modern buildings far below, soft morning light. Empty. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
     ('services-hero', 'portrait',
      'Editorial interior photograph of an office reception waiting area: a linen sofa and a cream boucle armchair around a low oak '
      'coffee table, a framed abstract ochre-and-black artwork on a warm plaster wall, the end of a dark stone reception counter at the '
@@ -136,18 +136,18 @@ JOBS = [
      f'cove lighting, soft daylight. Empty. {CAMERA}.'),
     ('serve-villas', 'square',
      'Editorial interior photograph of a double-height villa living room: two cream modular sofas facing each other on a wool rug, '
-     'white globe pendants on long cords, floor-to-ceiling glazing opening to a lush garden with trees, pale oak floor, warm '
+     'white opal glass globe pendants on long cords, floor-to-ceiling glazing opening to a lush garden with trees, pale oak floor, warm '
      'late-afternoon sunlight. Empty and serene. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
     ('serve-apartments', 'square',
      'Editorial interior photograph of a high-rise apartment bedroom: a low bed with crisp linen, a vertical oak slat '
      'headboard wall, a leather bench at the foot, a boucle lounge chair and a potted olive tree, floor-to-ceiling window with a view '
-     f'of generic modern glass towers, soft morning light. Empty. {CAMERA}.'),
+     f'of a hazy skyline of mixed modern buildings, soft morning light. Empty. {CAMERA}.'),
     ('serve-commercial', 'square',
      'Editorial interior photograph of a creative studio office: exposed black ducts on a dark ceiling with large black dome pendant '
      'lights, a long light oak worktable with laptops and black task chairs, a grey acoustic felt panel wall, an orange paper photo '
      'backdrop in the corner, polished concrete floor, soft daylight. Empty. Sony A7R IV, 24mm, f/8.'),
     ('cta-dusk', 'wide',
-     'Editorial interior photograph of a villa living room at dusk: warm table lamps and a globe pendant glowing, a low linen sofa, '
+     'Editorial interior photograph of a villa living room at dusk: two warm table lamps and a frosted opal glass sphere pendant glowing, a low linen sofa, '
      'leather lounge chairs and a round oak coffee table, floor-to-ceiling glazing showing a deep blue twilight sky and garden trees, '
      'warm interior light against the cool evening outside. Empty and calm. Canon EOS R5, 24mm tilt-shift lens, f/5.6, blue hour.'),
     # ---- Services (residential, lighting, turnkey, villas) and materials
@@ -162,9 +162,9 @@ JOBS = [
     ('service-turnkey', 'portrait',
      'Editorial interior photograph of a villa kitchen: full-height pale oak joinery cabinetry with integrated appliances, a large '
      'island with a white Calacatta marble worktop and waterfall edge, oak bar stools, a marble splashback with a floating shelf, '
-     f'white globe pendants, soft daylight from a garden window, oak floor. Empty and pristine. {CAMERA}.'),
+     f'white opal glass globe pendants, soft daylight from a garden window, oak floor. Empty and pristine. {CAMERA}.'),
     ('service-villa', 'portrait',
-     'Editorial interior photograph of a double-height villa living hall: three white globe pendants on long cords, full-height '
+     'Editorial interior photograph of a double-height villa living hall: three white opal glass globe pendants on long cords, full-height '
      'steel-framed glazing to a garden with olive trees, a cream sofa and a travertine coffee table, a tall plaster wall, pale oak '
      'floor, warm sunlight streaming in. Empty. Canon EOS R5, 17mm tilt-shift lens, f/8.'),
     ('project-atelier', 'portrait',
@@ -207,6 +207,7 @@ SEEDS = {name: 7000 + i * 17 for i, (name, _, _) in enumerate(JOBS)}
 # New alt text for images whose subject changes from the render they replace;
 # publish writes it into every page that shows the image.
 ALT = {
+    'room-office': 'Visualisation of a study: walnut bookcase wall, a desk, a reading chair and a window onto the garden.',
     'svc-design': 'Interior design desk with printed office floor plans and oak, travertine and fabric samples.',
 }
 
