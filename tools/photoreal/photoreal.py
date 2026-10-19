@@ -14,6 +14,7 @@ changes. Publishing the hero also rebuilds the Open Graph card.
   python photoreal.py publish                   # write assets/images/<name>-<width>.{jpg,webp}
   python photoreal.py publish --pick project-hoc=2
   python photoreal.py crop                      # close-ups cut from their main photos
+  python photoreal.py retouch serve-offices --box 300,555,360,580   # paint out stray lettering
   python photoreal.py publish --only project-hoc-detail --pick project-hoc-detail=crop
 
 Raw images and their settings are kept in out/<name>/ (git-ignored). A job's
@@ -308,6 +309,66 @@ def picks(args):
     return chosen
 
 
+def retouch(args):
+    """Paint out small lettering (fake brand names, labels) inside the given boxes.
+
+    Pixels that stand out from the box's median brightness (lighter by default,
+    darker with --dark) are filled from their surroundings; the result is saved
+    as the next variant with a note of what was changed.
+    """
+    try:
+        import cv2
+        import numpy as np
+    except ImportError:
+        sys.exit('retouch needs opencv-python-headless and numpy: pip install -r requirements.txt')
+    folder = OUT / args.name
+    src = folder / f'{args.source}.png'
+    if not src.exists():
+        sys.exit(f'{src.relative_to(HERE)} does not exist')
+    img = np.array(Image.open(src).convert('RGB'))
+    lum = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY).astype(int)
+    mask = np.zeros(lum.shape, np.uint8)
+    boxes = [tuple(int(v) for v in b.split(',')) for b in args.box]
+    if args.patch:
+        # Coons patch: fill each box from all four of its edges, so gradients and
+        # edges running through it (brushed metal, tread lines) carry on smoothly.
+        out = img.astype(np.float32)
+        for x0, y0, x1, y1 in boxes:
+            w, h = x1 - x0, y1 - y0
+            left = out[y0:y1, x0 - 3:x0].mean(axis=1)            # (h, 3)
+            right = out[y0:y1, x1:x1 + 3].mean(axis=1)
+            top = out[y0 - 3:y0, x0:x1].mean(axis=0)             # (w, 3)
+            bottom = out[y1:y1 + 3, x0:x1].mean(axis=0)
+            c00, c10 = out[y0 - 3:y0, x0 - 3:x0].mean(axis=(0, 1)), out[y0 - 3:y0, x1:x1 + 3].mean(axis=(0, 1))
+            c01, c11 = out[y1:y1 + 3, x0 - 3:x0].mean(axis=(0, 1)), out[y1:y1 + 3, x1:x1 + 3].mean(axis=(0, 1))
+            u = ((np.arange(w) + 1) / (w + 1))[None, :, None]
+            v = ((np.arange(h) + 1) / (h + 1))[:, None, None]
+            out[y0:y1, x0:x1] = ((1 - u) * left[:, None] + u * right[:, None] + (1 - v) * top[None] + v * bottom[None]
+                                 - ((1 - u) * (1 - v) * c00 + u * (1 - v) * c10 + (1 - u) * v * c01 + u * v * c11))
+            mask[y0:y1, x0:x1] = 255
+        fixed = np.clip(out, 0, 255).astype(np.uint8)
+        return save_retouch(args, folder, src, fixed, boxes, 'patch', int((mask > 0).sum()))
+    for x0, y0, x1, y1 in boxes:
+        win = lum[y0:y1, x0:x1]
+        med = np.median(win)
+        hit = win < med - args.threshold if args.dark else win > med + args.threshold
+        mask[y0:y1, x0:x1][hit] = 255
+    mask = cv2.dilate(mask, np.ones((5, 5), np.uint8))
+    fixed = cv2.inpaint(img, mask, 4, cv2.INPAINT_TELEA)
+    smooth = cv2.medianBlur(fixed, 5)
+    fixed[mask > 0] = smooth[mask > 0]
+    save_retouch(args, folder, src, fixed, boxes, 'dark' if args.dark else 'light', int((mask > 0).sum()))
+
+
+def save_retouch(args, folder, src, fixed, boxes, mode, pixels):
+    variant = 1 + max(int(p.stem) for p in folder.glob('*.png') if p.stem.isdigit())
+    dest = folder / f'{variant}.png'
+    Image.fromarray(fixed).save(dest)
+    note = {'retouched_from': src.name, 'boxes': boxes, 'mode': mode, 'threshold': args.threshold, 'pixels': pixels}
+    dest.with_suffix('.json').write_text(json.dumps(note, indent=2) + '\n')
+    print(f'{args.name}: {dest.relative_to(HERE)} ({pixels} px filled, {mode})')
+
+
 def crop(args):
     for name in parse_list(args.only) or list(DETAIL_CROPS):
         if name not in DETAIL_CROPS:
@@ -422,6 +483,14 @@ def main():
         p.add_argument('--only', help='comma-separated job names')
         p.add_argument('--pick', help="name=variant pairs, comma-separated (variant may be 'crop')")
         p.set_defaults(fn=fn)
+    r = sub.add_parser('retouch', help='paint out small lettering inside boxes, saving a new variant')
+    r.add_argument('name')
+    r.add_argument('--from', dest='source', default='1', help='variant to start from (default 1)')
+    r.add_argument('--box', action='append', required=True, help='x0,y0,x1,y1 in raw pixels; repeatable')
+    r.add_argument('--dark', action='store_true', help='the lettering is darker than its surroundings')
+    r.add_argument('--threshold', type=int, default=40, help='brightness difference that counts as lettering')
+    r.add_argument('--patch', action='store_true', help='fill whole boxes smoothly from their four edges (metal, plain surfaces)')
+    r.set_defaults(fn=retouch)
     c = sub.add_parser('crop', help='build project close-ups from their main photos')
     c.add_argument('--only', help='comma-separated close-up names')
     c.set_defaults(fn=crop)

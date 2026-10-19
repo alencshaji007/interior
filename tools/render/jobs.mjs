@@ -38,26 +38,15 @@ export const JOBS = [
   { name: 'cta-dusk', room: 'living', camera: 'window', size: 'wide', samples: 160,
     lighting: { sun: [-8, 1.2, -12], sunColor: '#ff9b5e', sunIntensity: 1.2, skyTop: '#39465a', skyBottom: '#d99c73', ground: '#4a443e', envIntensity: 0.55, lampIntensity: 12, lampSoftIntensity: 5, exposure: 1.25 } },
 
-  // Services.
-  { name: 'service-residential', room: 'living', camera: 'lounge', size: P, samples: 128 },
-  { name: 'service-villa', room: 'villa', camera: 'main', size: P, samples: 128, palette: 'glass' },
-  { name: 'service-lighting', room: 'dining', camera: 'pendant', size: P, samples: 128,
-    lighting: { skyTop: '#5d6a7c', skyBottom: '#e3b18b', sun: [-6, 1.5, -12], sunColor: '#ffae78', sunIntensity: 1.4, envIntensity: 0.6, lampIntensity: 10, exposure: 1.2 } },
-  { name: 'service-turnkey', room: 'kitchen', camera: 'front', size: P, samples: 128 },
-
   // Approvals & project management (desk study).
   { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
 
   // Page imagery.
   { name: 'about-band', room: 'workspace', camera: 'main', size: 'band', samples: 128, palette: 'office' },
-  { name: 'services-hero', room: 'reception', camera: 'wait', size: P, samples: 128, palette: 'reception' },
-  { name: 'process-hero', room: 'meeting', camera: 'screen', size: P, samples: 128, palette: 'meeting' },
   { name: 'svc-design', room: 'workspace', camera: 'plan', size: P, samples: 128, palette: 'office', options: { noCeiling: true, noExterior: true } },
   { name: 'svc-commercial', room: 'workspace', camera: 'aisle', size: P, samples: 128, palette: 'office' },
 
   // Who we serve.
-  { name: 'serve-offices', room: 'reception', camera: 'main', size: 'sq', samples: 128, palette: 'reception' },
-  { name: 'serve-villas', room: 'villa', camera: 'window', size: 'sq', samples: 128, palette: 'glass' },
   { name: 'serve-apartments', room: 'bedroom', camera: 'side', size: 'sq', samples: 128, palette: 'coastal', options: { city: true } },
   { name: 'serve-commercial', room: 'studio', camera: 'wide', size: 'sq', samples: 128, palette: 'studio' },
 

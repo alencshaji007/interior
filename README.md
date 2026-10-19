@@ -76,7 +76,7 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 
 ## Imagery
 
-Photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below) now cover the home hero (`hero-living`), the home introduction (`intro-dining`), the About hero (`about-lounge`), all five room photos (`room-*`), all seven main project images and their close-ups. The other stills are path-traced design visualisations (see *Regenerating the visualisations*); `tools/photoreal` has prompts ready to replace them, and `tools/render/jobs.mjs` lists only the ones still rendered. `og-image-1200.jpg` is the hero image composed with the logo; `photoreal.py publish` rebuilds it whenever it publishes the hero.
+Photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below) now cover the home hero (`hero-living`), the home introduction (`intro-dining`), the About, Services and Process heroes, all five room photos (`room-*`), the four service cards (`service-*`), the offices and villas tiles, all seven main project images and their close-ups. The other stills are path-traced design visualisations (see *Regenerating the visualisations*); `tools/photoreal` has prompts ready to replace them, and `tools/render/jobs.mjs` lists only the ones still rendered. `og-image-1200.jpg` is the hero image composed with the logo; `photoreal.py publish` rebuilds it whenever it publishes the hero.
 
 Each project close-up (`project-*-detail`) is a square crop of its main photo (`photoreal.py crop`, boxes in `DETAIL_CROPS`), so the pair always shows the same space.
 
@@ -125,6 +125,7 @@ python photoreal.py generate --only cta-dusk --variants 3
 python photoreal.py sheet                            # out/sheet.jpg to review the picked images
 python photoreal.py publish --pick cta-dusk=2        # writes assets/images/<name>-<width>.{jpg,webp}
 python photoreal.py crop                             # project close-ups cut from their main photos
+python photoreal.py retouch serve-offices --box 298,552,362,584   # paint out stray lettering (--dark, --patch)
 ```
 
 It needs network access to `huggingface.co` and `*.hf.space`. `publish` writes the same file names and pixel sizes the pages already use, so no HTML changes are needed. Running the Blender pipeline for the same names would overwrite these images, so drop those entries from `jobs.mjs` once the photographs are published.
