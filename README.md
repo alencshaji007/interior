@@ -4,7 +4,7 @@ The website for **Wellfit Designs** (WELL FIT SPACE DECORATION DESIGN & IMPLEMEN
 
 It is a six-page static site: Home, About Us, Services, Projects, Our Process and Contact. The home page opens on a full-bleed interior photo with a slow push-in, and small real-time Three.js ornaments accent Home and About. The site also uses GSAP scroll choreography, tabbed room photos on the Services page, a project dialog, an enquiry form and a custom cursor.
 
-The imagery is moving from path-traced 3D visualisations to photorealistic stills generated with FLUX.1 Krea [dev]; see *Imagery*.
+Every still is a photorealistic image generated with FLUX.1 Krea [dev]; see *Imagery*.
 
 No framework, no backend and no build step are needed to run it.
 
@@ -51,11 +51,12 @@ js/animations.js        GSAP + ScrollTrigger: loader, reveals, pinned hero, hori
 js/three-scene.js       Floating 3D ornaments (loaded on demand)
 js/room-kit.js          Procedural interior kit shared by the site and the renderer
 js/room-viewer.js       Tabbed room photos on the services page
-assets/images/          Photorealistic and path-traced stills (WebP + JPEG), logo
+assets/images/          Photorealistic stills (WebP + JPEG), logo
 assets/textures/        Pre-generated material textures and normal maps
 assets/fonts/           DM Serif Display + Jost (local WOFF2)
 assets/vendor/          three.bundle.min.js, gsap.min.js, ScrollTrigger.min.js
 tools/render/           Offline tooling: vendor bundle, textures, Cycles renders, tests
+tools/photoreal/        Photorealistic stills: prompts, generation, retouching, publishing
 ```
 
 Pages share the same header, mobile menu and footer markup. When you change one of them, change it in all six files.
@@ -65,7 +66,7 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 - **`room-kit.js`** is the core.
   - It provides procedural textures (oak planks, Calacatta marble, travertine, limewash, bouclé, linen…), a PBR material library and furniture builders.
   - It has five furnished room presets (`living`, `bedroom`, `kitchen`, `dining`, `office`), plus a double-height `villa` and a `materialStudio`.
-  - Five commercial presets back the project imagery: `workspace`, `lounge`, `reception`, `meeting` and `studio`. They use high-floor city views (`cityscape`) and furniture such as bench desks, task chairs, banquettes, glass partitions, acoustic panels and a photo backdrop.
+  - Five commercial presets rendered the earlier project visualisations: `workspace`, `lounge`, `reception`, `meeting` and `studio`. They use high-floor city views (`cityscape`) and furniture such as bench desks, task chairs, banquettes, glass partitions, acoustic panels and a photo backdrop.
   - It is a classic script, so it runs from `file://`.
 - **`three-scene.js`** draws the small floating ornaments (an architectural wireframe, material spheres, stone and oak blocks) with the kit's materials. Rendering pauses when they are off screen or the tab is hidden.
 - **`main.js`** loads Three.js and the 3D modules only on capable devices, and only on pages with ornaments (Home and About). Capable means:
@@ -76,7 +77,7 @@ Pages share the same header, mobile menu and footer markup. When you change one 
 
 ## Imagery
 
-Photorealistic stills generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below) now cover the home hero (`hero-living`), the home introduction (`intro-dining`), the About, Services and Process heroes, all five room photos (`room-*`), the four service cards (`service-*`), the offices and villas tiles, all seven main project images and their close-ups. The other stills are path-traced design visualisations (see *Regenerating the visualisations*); `tools/photoreal` has prompts ready to replace them, and `tools/render/jobs.mjs` lists only the ones still rendered. `og-image-1200.jpg` is the hero image composed with the logo; `photoreal.py publish` rebuilds it whenever it publishes the hero.
+Every still on the site is a photorealistic image generated with FLUX.1 Krea [dev] (see *Photorealistic stills* below). They are design visualisations, not photographs of completed projects. The Blender pipeline that rendered the earlier path-traced versions (see *Regenerating the visualisations*) is kept for reference only, so `tools/render/jobs.mjs` is empty. `og-image-1200.jpg` is the hero image composed with the logo; `photoreal.py publish` rebuilds it whenever it publishes the hero.
 
 Each project close-up (`project-*-detail`) is a square crop of its main photo (`photoreal.py crop`, boxes in `DETAIL_CROPS`), so the pair always shows the same space.
 
@@ -94,7 +95,7 @@ Each image exists as `assets/images/<name>-<width>.{webp,jpg}`, usually in two w
 
 ## Regenerating the visualisations (optional)
 
-The path-traced stills are rendered with Blender's Cycles from the exact scenes in `room-kit.js`:
+The site no longer uses any path-traced still; this pipeline is kept for reference. It renders stills with Blender's Cycles from the exact scenes in `room-kit.js`:
 
 ```bash
 cd tools/render
@@ -106,7 +107,7 @@ npm run render -- --python "$(which python)" service-   # stills whose name matc
 node pipeline.mjs --preview room-living --python "$(which python)"   # quick low-res preview
 ```
 
-`jobs.mjs` lists every rendered image: which room, camera, palette and lighting it uses. The commercial scenes use a few offline-only textures (herringbone oak, carpet tiles, tower facades for the city views); they live in `EXTRA_TEXTURES`, so the live site never generates or requests them.
+`jobs.mjs` lists the images to render (currently none): which room, camera, palette and lighting each uses. The commercial scenes use a few offline-only textures (herringbone oak, carpet tiles, tower facades for the city views); they live in `EXTRA_TEXTURES`, so the live site never generates or requests them.
 
 The pipeline was last run with `bpy` 5.0 on Python 3.11. `--samples 24 --preview` gives a quick low-resolution check before a full render.
 
@@ -125,10 +126,10 @@ python photoreal.py generate --only cta-dusk --variants 3
 python photoreal.py sheet                            # out/sheet.jpg to review the picked images
 python photoreal.py publish --pick cta-dusk=2        # writes assets/images/<name>-<width>.{jpg,webp}
 python photoreal.py crop                             # project close-ups cut from their main photos
-python photoreal.py retouch serve-offices --box 298,552,362,584   # paint out stray lettering (--dark, --patch)
+python photoreal.py retouch serve-offices --box 298,552,362,584   # paint out stray lettering (--dark, --patch, --rows, --clone DX,DY)
 ```
 
-It needs network access to `huggingface.co` and `*.hf.space`. `publish` writes the same file names and pixel sizes the pages already use, so no HTML changes are needed. Running the Blender pipeline for the same names would overwrite these images, so drop those entries from `jobs.mjs` once the photographs are published.
+It needs network access to `huggingface.co` and `*.hf.space`. `publish` writes the same file names and pixel sizes the pages already use, so no HTML changes are needed. Running the Blender pipeline for the same names would overwrite these images, which is why `jobs.mjs` is empty.
 
 ## Testing
 
@@ -147,7 +148,7 @@ All four exit with a non-zero status on failure.
 ## Before launch
 
 - **Enquiry form**: it validates and shows a confirmation, but there is no backend, so enquiries are not sent anywhere yet. Connect it to a form service or endpoint.
-- **Project photographs**: the content document asks for approved project photographs and verified descriptions before publication. The project images are currently 3D visualisations; swap in approved photography when available.
+- **Project photographs**: the content document asks for approved project photographs and verified descriptions before publication. The project images are currently AI-generated visualisations; swap in approved photography when available.
 - **Domain**: canonical and Open Graph URLs assume `https://www.wellfitdesigns.com/`.
 
 ## Accessibility & performance
@@ -172,5 +173,5 @@ All four exit with a non-zero status on failure.
 
 - [Three.js](https://threejs.org) (MIT) and [GSAP](https://gsap.com) with ScrollTrigger (GSAP standard licence, free for this use).
 - Fonts: [DM Serif Display](https://github.com/googlefonts/dm-fonts) and [Jost](https://github.com/indestructible-type/Jost), both under the SIL Open Font License.
-- The logo belongs to Wellfit Designs. Visualisations, textures and 3D content were generated procedurally for this project.
+- The logo belongs to Wellfit Designs. Textures and the 3D ornaments were generated procedurally for this project.
 - Photorealistic stills were generated with [FLUX.1 Krea [dev]](https://huggingface.co/black-forest-labs/FLUX.1-Krea-dev); its model card permits commercial use of generated outputs.

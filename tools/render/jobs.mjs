@@ -1,4 +1,4 @@
-// Every still used on the site, described as a room + camera + palette.
+// Stills rendered with Cycles, each described as a room + camera + palette.
 // Output lands in assets/images/<name>-<width>.(webp|jpg).
 const L = 'landscape', P = 'portrait';
 const SIZES = {
@@ -31,29 +31,10 @@ const PALETTES = {
 };
 
 export const JOBS = [
-  // Stills not yet replaced by photorealistic ones from tools/photoreal; drop
-  // each entry once its photo is published.
-
-  // Editorial / section imagery.
-  { name: 'cta-dusk', room: 'living', camera: 'window', size: 'wide', samples: 160,
-    lighting: { sun: [-8, 1.2, -12], sunColor: '#ff9b5e', sunIntensity: 1.2, skyTop: '#39465a', skyBottom: '#d99c73', ground: '#4a443e', envIntensity: 0.55, lampIntensity: 12, lampSoftIntensity: 5, exposure: 1.25 } },
-
-  // Approvals & project management (desk study).
-  { name: 'project-atelier', room: 'office', camera: 'desk', size: P, samples: 128, palette: 'atelier', options: { loft: true } },
-
-  // Page imagery.
-  { name: 'about-band', room: 'workspace', camera: 'main', size: 'band', samples: 128, palette: 'office' },
-  { name: 'svc-design', room: 'workspace', camera: 'plan', size: P, samples: 128, palette: 'office', options: { noCeiling: true, noExterior: true } },
-  { name: 'svc-commercial', room: 'workspace', camera: 'aisle', size: P, samples: 128, palette: 'office' },
-
-  // Who we serve.
-  { name: 'serve-apartments', room: 'bedroom', camera: 'side', size: 'sq', samples: 128, palette: 'coastal', options: { city: true } },
-  { name: 'serve-commercial', room: 'studio', camera: 'wide', size: 'sq', samples: 128, palette: 'studio' },
-
-  // Finishing-works close-up.
-  ...['stone'].map((m) => ({
-    name: 'material-' + m, room: 'materialStudio', camera: 'main', size: 'square', samples: m === 'glass' ? 256 : 128, options: { material: m, noExterior: true, frontWall: false },
-  })),
+  // Every still on the site is now a photorealistic image from tools/photoreal,
+  // so nothing is rendered. To render one again, add an entry such as
+  //   { name: 'cta-dusk', room: 'living', camera: 'window', size: 'wide', samples: 160 }
+  // and note that it overwrites the published photo of the same name.
 ];
 
 export function expand(job, { preview = false } = {}) {

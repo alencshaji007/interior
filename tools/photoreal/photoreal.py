@@ -211,7 +211,7 @@ SEEDS = {name: 7000 + i * 17 for i, (name, _, _) in enumerate(JOBS)}
 # publish writes it into every page that shows the image.
 ALT = {
     'room-office': 'Visualisation of a study: walnut bookcase wall, a desk, a reading chair and a window onto the garden.',
-    'svc-design': 'Interior design desk with printed office floor plans and oak, travertine and fabric samples.',
+    'svc-design': 'Interior design desk with a printed floor plan, a laptop, a pencil and material swatches.',
     'project-smartleave-detail': 'Brass disc on the oak-panelled wall above the veined stone reception counter.',
     'project-hoc-detail': 'Softbox on a light stand beside the orange paper backdrop.',
     'project-avery-detail': 'Leather lounge chair and stone coffee table by the garden glazing.',
@@ -329,6 +329,27 @@ def retouch(args):
     lum = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY).astype(int)
     mask = np.zeros(lum.shape, np.uint8)
     boxes = [tuple(int(v) for v in b.split(',')) for b in args.box]
+    if args.clone:
+        # Clone stamp: copy each box from the area DX,DY away, feathering its edge,
+        # so textured surfaces (hedges, lawn, carpet) keep their grain. The copy is
+        # shifted to the typical colour around the box so it doesn't show as a patch.
+        dx, dy = (int(v) for v in args.clone.split(','))
+        out = img.astype(np.float32)
+
+        def ring(x0, y0, x1, y1):
+            keep = np.ones((y1 - y0 + 6, x1 - x0 + 6), bool)
+            keep[3:-3, 3:-3] = False
+            return np.median(img[y0 - 3:y1 + 3, x0 - 3:x1 + 3][keep].astype(np.float32), axis=0)
+
+        for x0, y0, x1, y1 in boxes:
+            ramp = lambda n: np.minimum(np.arange(n) + 1, np.arange(n)[::-1] + 1).clip(max=4) / 4
+            alpha = np.minimum.outer(ramp(y1 - y0), ramp(x1 - x0))[:, :, None]
+            copy = img[y0 + dy:y1 + dy, x0 + dx:x1 + dx].astype(np.float32)
+            copy += ring(x0, y0, x1, y1) - ring(x0 + dx, y0 + dy, x1 + dx, y1 + dy)
+            out[y0:y1, x0:x1] = copy * alpha + out[y0:y1, x0:x1] * (1 - alpha)
+            mask[y0:y1, x0:x1] = 255
+        fixed = np.clip(out, 0, 255).astype(np.uint8)
+        return save_retouch(args, folder, src, fixed, boxes, f'clone {dx},{dy}', int((mask > 0).sum()))
     if args.rows:
         # Bridge each row of the box from the pixels either side, e.g. to replace
         # an unwanted building with the sky around it.
@@ -503,6 +524,7 @@ def main():
     r.add_argument('--threshold', type=int, default=40, help='brightness difference that counts as lettering')
     r.add_argument('--patch', action='store_true', help='fill whole boxes smoothly from their four edges (metal, plain surfaces)')
     r.add_argument('--rows', action='store_true', help='fill whole boxes row by row from their left and right edges (sky, plain walls)')
+    r.add_argument('--clone', metavar='DX,DY', help='fill whole boxes with a copy of the area DX,DY pixels away (hedges, lawn, carpet)')
     r.set_defaults(fn=retouch)
     c = sub.add_parser('crop', help='build project close-ups from their main photos')
     c.add_argument('--only', help='comma-separated close-up names')
