@@ -329,6 +329,18 @@ def retouch(args):
     lum = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY).astype(int)
     mask = np.zeros(lum.shape, np.uint8)
     boxes = [tuple(int(v) for v in b.split(',')) for b in args.box]
+    if args.rows:
+        # Bridge each row of the box from the pixels either side, e.g. to replace
+        # an unwanted building with the sky around it.
+        out = img.astype(np.float32)
+        for x0, y0, x1, y1 in boxes:
+            t = ((np.arange(x1 - x0) + 1) / (x1 - x0 + 1))[:, None]
+            for y in range(y0, y1):
+                left, right = out[y, x0 - 3:x0].mean(axis=0), out[y, x1:x1 + 3].mean(axis=0)
+                out[y, x0:x1] = left[None, :] * (1 - t) + right[None, :] * t
+            mask[y0:y1, x0:x1] = 255
+        fixed = np.clip(out, 0, 255).astype(np.uint8)
+        return save_retouch(args, folder, src, fixed, boxes, 'rows', int((mask > 0).sum()))
     if args.patch:
         # Coons patch: fill each box from all four of its edges, so gradients and
         # edges running through it (brushed metal, tread lines) carry on smoothly.
@@ -490,6 +502,7 @@ def main():
     r.add_argument('--dark', action='store_true', help='the lettering is darker than its surroundings')
     r.add_argument('--threshold', type=int, default=40, help='brightness difference that counts as lettering')
     r.add_argument('--patch', action='store_true', help='fill whole boxes smoothly from their four edges (metal, plain surfaces)')
+    r.add_argument('--rows', action='store_true', help='fill whole boxes row by row from their left and right edges (sky, plain walls)')
     r.set_defaults(fn=retouch)
     c = sub.add_parser('crop', help='build project close-ups from their main photos')
     c.add_argument('--only', help='comma-separated close-up names')
