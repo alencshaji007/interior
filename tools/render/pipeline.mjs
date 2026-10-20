@@ -1,4 +1,4 @@
-// FORMA image pipeline.
+// Wellfit Designs image pipeline.
 //   1. Chromium builds each room with js/room-kit.js and exports GLB (+ depth map).
 //   2. Blender/Cycles (bpy) path traces and denoises it, writing WebP/JPEG.
 //

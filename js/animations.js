@@ -1,11 +1,12 @@
 /* ==========================================================================
-   FORMA — animations.js
+   Wellfit Designs — animations.js
    GSAP + ScrollTrigger choreography:
-     • page-load transition (loader → hero)
+     • page-load transition (loader → hero on the home page, a quick
+       title reveal on inner pages)
      • text splitting and line reveals
      • fade/slide-up and clip-path image reveals, image parallax
-     • pinned hero with scroll-driven 3D camera and cinematic crop
-     • horizontal services scroll, process timeline, counters, CTA
+     • pinned hero with a slow push-in and cinematic crop
+     • horizontal services scroll, process timelines, CTA
    Everything degrades to "content simply visible" when GSAP is missing or
    the visitor prefers reduced motion.
    ========================================================================== */
@@ -18,48 +19,39 @@
 
   /* ------------------------------------------------------------------------
      Text splitting — wraps each word in a masked span. The original text is
-     kept for assistive tech via aria-label; the visual spans are hidden.
+     kept in a visually hidden copy for assistive tech (aria-label is not
+     reliable on paragraphs); the animated spans are hidden from it. Words
+     inside an inline element (e.g. <em class="accent">) keep its class.
      ------------------------------------------------------------------------ */
   function splitWords(el) {
     if (el.dataset.splitDone) return $$('.split-line > span', el);
-    const text = el.textContent.trim().replace(/\s+/g, ' ');
-    el.setAttribute('aria-label', text);
-    el.textContent = '';
-    const frag = document.createDocumentFragment();
-    text.split(' ').forEach((word, i, arr) => {
+    const words = [];
+    el.childNodes.forEach((node) => {
+      if (node.nodeName === 'BR') { words.push({ br: true }); return; }
+      const cls = node.nodeType === Node.ELEMENT_NODE ? node.className : '';
+      node.textContent.split(/\s+/).filter(Boolean).forEach((word) => words.push({ word, cls }));
+    });
+    const sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = words.filter((w) => !w.br).map((w) => w.word).join(' ');
+    const visual = document.createElement('span');
+    visual.setAttribute('aria-hidden', 'true');
+    words.forEach(({ word, cls, br }, i) => {
+      if (br) { visual.appendChild(document.createElement('br')); return; }
       const mask = document.createElement('span');
       mask.className = 'split-line';
       mask.style.display = 'inline-block';
-      mask.setAttribute('aria-hidden', 'true');
       const inner = document.createElement('span');
+      if (cls) inner.className = cls;
       inner.textContent = word;
       mask.appendChild(inner);
-      frag.appendChild(mask);
-      if (i < arr.length - 1) frag.appendChild(document.createTextNode(' '));
+      visual.appendChild(mask);
+      if (i < words.length - 1) visual.appendChild(document.createTextNode(' '));
     });
-    el.appendChild(frag);
+    el.textContent = '';
+    el.append(sr, visual);
     el.dataset.splitDone = '1';
     return $$('.split-line > span', el);
-  }
-
-  function splitChars(el) {
-    const text = el.textContent.trim();
-    el.textContent = '';
-    const sr = document.createElement('span');
-    sr.className = 'sr-only';
-    sr.textContent = text;
-    const visual = document.createElement('span');
-    visual.setAttribute('aria-hidden', 'true');
-    visual.className = 'split-line';
-    visual.style.display = 'inline-block';
-    [...text].forEach((ch) => {
-      const c = document.createElement('span');
-      c.className = 'char';
-      c.textContent = ch;
-      visual.appendChild(c);
-    });
-    el.append(sr, visual);
-    return $$('.char', visual);
   }
 
   const Animations = {
@@ -71,7 +63,8 @@
       this.gsap = window.gsap;
       this.ST = window.ScrollTrigger;
       this.enabled = !!(this.gsap && this.ST) && !this.env.reducedMotion;
-      this.brandChars = splitChars($('[data-hero-brand]'));
+      const introTitle = $('[data-intro-title]');
+      this.introWords = introTitle ? splitWords(introTitle) : [];
       this.splits = $$('[data-split]').map((el) => ({ el, words: splitWords(el) }));
 
       if (!this.enabled) {
@@ -88,8 +81,9 @@
 
       // Initial states are set from JS only, so content stays visible if
       // scripts fail.
-      gsap.set(this.brandChars, { yPercent: 110 });
-      gsap.set('[data-hero-item]', { y: 28, opacity: 0 });
+      if (this.introWords.length) gsap.set(this.introWords, { yPercent: 110 });
+      const heroItems = $$('[data-hero-item]');
+      if (heroItems.length) gsap.set(heroItems, { y: 28, opacity: 0 });
       gsap.set('[data-header]', { y: -24, opacity: 0 });
 
       this.setupReveals();
@@ -114,21 +108,27 @@
           loader.style.transition = 'opacity 0.4s ease';
           loader.style.opacity = '0';
           window.setTimeout(done, this.env.reducedMotion ? 50 : 400);
+        } else {
+          done();
         }
         this.countersInstant();
         return Promise.resolve();
       }
       const { gsap } = this;
+      const heroMedia = $$('.hero__poster img');
+      const heroItems = $$('[data-hero-item]');
       return new Promise((resolve) => {
         const tl = gsap.timeline({ onComplete: () => { done(); resolve(); } });
-        tl.to('.loader__word span', { yPercent: -105, duration: 0.6, stagger: 0.035, ease: 'expo.in' })
-          .to('.loader__line, .loader__caption', { opacity: 0, duration: 0.3 }, '<')
-          .to(loader, { clipPath: 'inset(0 0 100% 0)', duration: 0.9, ease: 'expo.inOut' }, '-=0.15')
-          .fromTo('.hero__poster img, .hero__canvas', { scale: 1.12 }, { scale: 1, duration: 2.2, ease: 'expo.out' }, '<0.1')
-          .to(this.brandChars, { yPercent: 0, duration: 1.4, stagger: 0.06 }, '<0.35')
-          .to('[data-hero-item]', { y: 0, opacity: 1, duration: 1.2, stagger: 0.08 }, '<0.25')
-          .to('[data-header]', { y: 0, opacity: 1, duration: 1 }, '<0.2');
-        loader.classList.add('is-done');
+        if (loader) {
+          tl.to('.loader__word span', { yPercent: -105, duration: 0.6, ease: 'expo.in' })
+            .to('.loader__line, .loader__caption', { opacity: 0, duration: 0.3 }, '<')
+            .to(loader, { clipPath: 'inset(0 0 100% 0)', duration: 0.9, ease: 'expo.inOut' }, '-=0.15');
+          loader.classList.add('is-done');
+        }
+        if (heroMedia.length) tl.fromTo(heroMedia, { scale: 1.12 }, { scale: 1, duration: 2.2, ease: 'expo.out' }, loader ? '<0.1' : 0);
+        if (this.introWords.length) tl.to(this.introWords, { yPercent: 0, duration: 1.3, stagger: 0.05 }, loader ? '<0.35' : 0.05);
+        if (heroItems.length) tl.to(heroItems, { y: 0, opacity: 1, duration: 1.2, stagger: 0.08 }, '<0.25');
+        tl.to('[data-header]', { y: 0, opacity: 1, duration: 1 }, loader ? '<0.2' : 0);
       });
     },
 
@@ -147,12 +147,15 @@
       });
 
       // Fade / slide up, batched for performance.
-      gsap.set('[data-reveal="up"]', { y: 36, opacity: 0 });
-      ST.batch('[data-reveal="up"]', {
-        start: 'top 90%',
-        once: true,
-        onEnter: (batch) => gsap.to(batch, { y: 0, opacity: 1, duration: 1.1, stagger: 0.08 }),
-      });
+      const ups = $$('[data-reveal="up"]');
+      if (ups.length) {
+        gsap.set(ups, { y: 36, opacity: 0 });
+        ST.batch(ups, {
+          start: 'top 90%',
+          once: true,
+          onEnter: (batch) => gsap.to(batch, { y: 0, opacity: 1, duration: 1.1, stagger: 0.08 }),
+        });
+      }
 
       // Clip-path image reveal with a counter-scale on the image.
       $$('[data-reveal="clip"]').forEach((el) => {
@@ -179,19 +182,23 @@
         });
       });
 
-      // Service cards and materials: light stagger on entry.
-      ST.batch('.service-card, .material', {
-        start: 'top 92%',
-        once: true,
-        onEnter: (batch) => gsap.fromTo(batch, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }),
-      });
+      // Service and audience cards: light stagger on entry.
+      const cards = $$('.service-card, .serve-card');
+      if (cards.length) {
+        ST.batch(cards, {
+          start: 'top 92%',
+          once: true,
+          onEnter: (batch) => gsap.fromTo(batch, { y: 50, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }),
+        });
+      }
     },
 
-    // Hero: pinned while the 3D camera walks into the room; content lifts
-    // away and the frame tightens into a cinematic crop before release.
+    // Hero: pinned while the photo pushes in; content lifts away and the
+    // frame tightens into a cinematic crop before release.
     setupHero() {
-      const { gsap, ST } = this;
+      const { gsap } = this;
       const hero = $('[data-hero]');
+      if (!hero) return;
       const media = $('[data-hero-media]');
       const content = $('.hero__content');
       const meta = $('.hero__meta');
@@ -207,7 +214,6 @@
             pin: true,
             scrub: 0.6,
             anticipatePin: 1,
-            onUpdate: (self) => { if (FORMA.hero) FORMA.hero.setScroll(self.progress); },
           },
         });
         tl.to(content, { y: -80, opacity: 0, duration: 0.45 }, 0)
@@ -215,7 +221,6 @@
           .to('.hero__poster img', { scale: 1.14, duration: 1 }, 0)
           .to('.hero__shade', { opacity: 0.35, duration: 0.6 }, 0)
           .fromTo(media, { clipPath: 'inset(0% 0% 0% 0%)' }, { clipPath: 'inset(7% 4% 7% 4%)', duration: 0.45, ease: 'power2.inOut' }, 0.55);
-        return () => { if (FORMA.hero) FORMA.hero.setScroll(0); };
       });
 
       mm.add('(max-width: 767px)', () => {
@@ -262,24 +267,27 @@
 
     setupProcess() {
       const { gsap, ST } = this;
-      const timeline = $('[data-timeline]');
-      if (!timeline) return;
-      gsap.fromTo('[data-timeline-fill]', { scaleY: 0 }, {
-        scaleY: 1,
-        ease: 'none',
-        scrollTrigger: { trigger: timeline, start: 'top 65%', end: 'bottom 65%', scrub: true },
-      });
-      $$('[data-step]', timeline).forEach((step) => {
-        ST.create({
-          trigger: step,
-          start: 'top 68%',
-          onEnter: () => step.classList.add('is-active'),
-          onLeaveBack: () => step.classList.remove('is-active'),
-        });
-        gsap.from($('.timeline__title', step), {
-          x: -24,
-          duration: 1.2,
-          scrollTrigger: { trigger: step, start: 'top 75%', once: true },
+      $$('[data-timeline]').forEach((timeline) => {
+        const fill = $('[data-timeline-fill]', timeline);
+        if (fill) {
+          gsap.fromTo(fill, { scaleY: 0 }, {
+            scaleY: 1,
+            ease: 'none',
+            scrollTrigger: { trigger: timeline, start: 'top 65%', end: 'bottom 65%', scrub: true },
+          });
+        }
+        $$('[data-step]', timeline).forEach((step) => {
+          ST.create({
+            trigger: step,
+            start: 'top 68%',
+            onEnter: () => step.classList.add('is-active'),
+            onLeaveBack: () => step.classList.remove('is-active'),
+          });
+          gsap.from($('.timeline__title', step), {
+            x: -24,
+            duration: 1.2,
+            scrollTrigger: { trigger: step, start: 'top 75%', once: true },
+          });
         });
       });
     },
@@ -327,9 +335,9 @@
       });
     },
 
-    /** Small feedback pulse used by the room viewer's CSS fallback. */
+    /** Small feedback pulse when the room viewer changes room. */
     pulse(el) {
-      if (!this.enabled || !el || el.classList.contains('is-webgl')) return;
+      if (!this.enabled || !el) return;
       this.gsap.fromTo(el, { scale: 0.985 }, { scale: 1, duration: 1.2 });
     },
 
